@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXml\UIxsd">
+    <Frame name="MyTestFrame">
+        <Scripts> <!-- thi is a comment -->
+            <OnLoad>
+                self:RegisterEvent("CHAT_MSG_WHISPER")
+            </OnLoad>
+            <OnEvent>
+                local msg, sender =...
+                print(event,sender,msg)
+            </OnEvent>
+        </Scripts>
+    </Frame>
+</Ui>
