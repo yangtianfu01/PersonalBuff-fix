@@ -14,5 +14,6 @@ src\Locales.xml
 src\zhTW.lua
 src\enus.lua
 
+src\spells.lua
 src\PlateEnhancement.lua
 src\config.lua

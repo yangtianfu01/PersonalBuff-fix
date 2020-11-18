@@ -7,720 +7,257 @@
 
 local AceConfig = LibStub("AceConfig-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("PlateEnhancement")
+local media = LibStub("LibSharedMedia-3.0")
 
-local playerOption
+local mainOption
 local function getClassOption()
-    local _,_,ID = UnitClass("player")
+    mainOption = {
+        type = "group",
+        childGroups = "tab",
+        name = L["option"],
+        args = {
+            iconOption = {
+                order = 1,
+                type = "group",
+                name = L["general"],
 
+                args = {
+                    column = {
+                        order = 1,
+                        name = L["icons"],
+                        type = "group",
+                        args ={
+                            font = {
+                                order = 1,
+                                type = "select",
+                                style = "dropdown",
+                                name = L["font"],
+                                values = media:List("font"),
+                                itemControl = "DDI-Font",
+                                get = function(info)
+                                    for i, v in next, media:List("font") do
+                                        if v == aceDB.char.font then return i end
+                                    end
+                                end,
+                                set = function(info,key)
+                                    local list = media:List("font")
+                                    local font = list[key]
+                                    aceDB.char.font = font
 
-    if ID == 1 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
+                                    adjustmentFont()
+                                end,
+                            },
+                            iconSize = {
+                                order = 2,
+                                type = "range",
+                                name = L["iconSize"],
+                                min = 12,
+                                max = 30,
+                                step = 1,
+                                get = function(info)
+                                    return aceDB.char.iconSize
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.iconSize = val
+                                    adjustmentIconSize()
+                                end,
+                            },
 
-                Warrior = {
-                    order = 1,
-                    type = "multiselect",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return localizedClass
-                    end,
+                            fontSize = {
+                                order = 3,
+                                type = "range",
+                                name = L["fontSize"],
+                                min = 6,
+                                max = 14,
+                                step = 1,
+                                get = function(info)
+                                    return aceDB.char.fontSize
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.fontSize = val
+                                    adjustmentFont()
+                                end,
+                            },
+                            iconSpacing = {
+                                order = 4,
+                                type = "range",
+                                name = L["iconSpacing"],
+                                min = 0,
+                                max = 6,
+                                step = 1,
+                                get = function(info)
+                                    return aceDB.char.iconSpacing
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.iconSpacing = val
+                                    adjustmentIconSpacing()
+                                end,
+                            },
+                            XOffset = {
+                                order = 5,
+                                type = "range",
+                                name = L["X offset"],
+                                min = -20,
+                                max = 20,
+                                step = 1,
+                                get = function(info)
+                                    return aceDB.char.XOffset
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.XOffset = val
+                                    setXOffset(val)
+                                end,
+                            },
+                            YOffset = {
+                                order = 5,
+                                type = "range",
+                                name = L["Y offset"],
+                                min = -20,
+                                max = 20,
+                                step = 1,
+                                get = function(info)
+                                    return aceDB.char.YOffset
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.YOffset = val
+                                    setYOffset(val)
+                                end,
+                            },
+                            countFont = {
+                                order = 6,
+                                type = "select",
+                                style = "dropdown",
+                                name = L["count font"],
+                                values = media:List("font"),
+                                itemControl = "DDI-Font",
+                                get = function(info)
+                                    for i, v in next, media:List("font") do
+                                        if v == aceDB.char.countFont then return i end
+                                    end
+                                end,
+                                set = function(info,key)
+                                    local list = media:List("font")
+                                    local font = list[key]
+                                    aceDB.char.countFont = font
+                                    adjustmentCountFont()
+                                end,
+                            },
+                            countFontSize = {
+                                order = 7,
+                                type = "range",
+                                name = L["count font size"],
+                                min = 4,
+                                max = 18,
+                                step = 1,
+                                get = function(info)
+                                    return aceDB.char.countFontSize
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.countFontSize = val
+                                    adjustmentCountFont()
+                                end,
+                            },
+                        },
 
-                    values = {
-                        [23920] = GetSpellInfo(23920),      --法術反射
-                        [190456] = GetSpellInfo(190456),    --無視苦痛
-                        [97463] = GetSpellInfo(97463),      --振奮咆哮
-                        [18499] = GetSpellInfo(18499),      --狂暴之怒
-                        [132404] = GetSpellInfo(132404),    --盾牌格擋
-                        [32216] = GetSpellInfo(34428),      --勝利衝擊
-                    }
-                },
-
-                Arms = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("71")
-                        return name
-                    end,
-                    values = {
-                        [118038] = GetSpellInfo(118038),    --劍下亡魂
-                        [7384] = GetSpellInfo(7384),        --壓制
-                        [260708] = GetSpellInfo(260708),    --橫掃攻擊
-                        [107574] = GetSpellInfo(107574),    --巨像化身
-                        [248622] = GetSpellInfo(248622),    --趕盡殺絕
-                    }
-                },
-                Fury = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("72")
-                        return name
-                    end,
-                    values = {
-                        [184362] = GetSpellInfo(184362),    --狂怒
-                        [1719] = GetSpellInfo(1719),        --魯莽
-                        [275672] = GetSpellInfo(275672),    --粉碎怒擊
-                        [335082] = GetSpellInfo(335082),    --狂亂
-                        [184364] = GetSpellInfo(184364),    --狂怒恢復
-                    }
-                },
-                Protection = {
-                    order = 4,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("73")
-                        return name
-                    end,
-                    values = {
-                        [871] = GetSpellInfo(871),          --盾牆
-                        [12975] = GetSpellInfo(12975),      --破釜沉舟
-                        [107574] = GetSpellInfo(107574),    --巨象化身
-                    }
-                }
-            }
-        }
-    elseif ID == 2 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
-                Paladin = {
-                    order = 1,
-                    type = "multiselect",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return localizedClass
-                    end,
-
-                    values = {
-                        [132403] = GetSpellInfo(132403),
-                        [1022] = GetSpellInfo(1022),
-                        [32223] = GetSpellInfo(32223),
-                        [465] = GetSpellInfo(465),
-                        [183435] = GetSpellInfo(183435),
-                        [1044] = GetSpellInfo(1044),
-                        [642] = GetSpellInfo(642),
-                        [31884] = GetSpellInfo(31884),
-                    }
-                },
-
-                Holy = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("65")
-                        return name
-                    end,
-                    values = {
-                        [31821] = GetSpellInfo(31821),
-                        [498] = GetSpellInfo(498),
-                        [54149] = GetSpellInfo(54149),
-                        [214202] = GetSpellInfo(214202),
-                        [105809] = GetSpellInfo(105809),
-                        [216331] = GetSpellInfo(216331),
-                        [210391] = GetSpellInfo(210391),
-                    }
-                },
-                Protection = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("66")
-                        return name
-                    end,
-                    values = {
-                        [31850] = GetSpellInfo(31850),
-                        [86659] = GetSpellInfo(86659),
-                        [280373] = GetSpellInfo(280373),
-                        [204018] = GetSpellInfo(204018),
-                        [105809] = GetSpellInfo(105809),
-                    }
-                },
-                Retribution = {
-                    order = 4,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("70")
-                        return name
-                    end,
-                    values = {
-                        [184662] = GetSpellInfo(184662),
-                        [269571] = GetSpellInfo(269571),
-                        [231895] = GetSpellInfo(231895),
-                        [223819] = GetSpellInfo(223819),
-                        [209785] = GetSpellInfo(209785),
                     }
                 }
-            }
-        }
-    elseif ID == 3 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
-                Hunter = {
-                    order = 1,
-                    type = "group",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return format("|T%s:20|t %s", "Interface\\ICONS\\Classicon_hunter", localizedClass)
-                    end,
-                    args = {}
-                        --local args = {}
-                        --for i,k in ipairs(HunterSpells) do
-                        --    local arg = {
-                        --        name = format("|T%s:20|t %s", GetSpellTexture(k), GetSpellInfo(k)),
-                        --        type = "toggle"
-                        --    }
-                        --    table.insert(args,arg)
-                        --end
 
-                    --values = {
-                    --    [186257] = GetSpellInfo(186257),
-                    --    [186258] = GetSpellInfo(186258),
-                    --    [186265] = GetSpellInfo(186265),
-                    --    [5384] = GetSpellInfo(5384),
-                    --    [199483] = GetSpellInfo(199483),
-                    --}
-                },
+            },
 
-                BeastMastery = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("253")
-                        return name
-                    end,
-                    values = {
-                        [193530] = GetSpellInfo(193530),
-                        [19574] = GetSpellInfo(19574),
-                        [268877] = GetSpellInfo(268877),
-                        [257946] = GetSpellInfo(257946),
-                        [272790] = GetSpellInfo(272790),
-                    }
-                },
-                Marksmanship = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("254")
-                        return name
-                    end,
-                    values = {
-                        [288613] = GetSpellInfo(288613),
-                        [257622] = GetSpellInfo(257622),
-                        [260242] = GetSpellInfo(260242),
-                        [260402] = GetSpellInfo(260402),
-                        [193534] = GetSpellInfo(193534),
-                        [194594] = GetSpellInfo(194594),
-                    }
-                },
-                Survival = {
-                    order = 4,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("255")
-                        return name
-                    end,
-                    values = {
-                        [266779] = GetSpellInfo(266779),
-                        [186289] = GetSpellInfo(186289),
-                        [259388] = GetSpellInfo(259388),
-                    }
-                },
+            BuffOption = {
+                order = 2,
+                type = "group",
+                name = L["Buffs"],
 
-                --class = {
-                --    type = "group",
-                --    icon = "Interface\\ICONS\\Classicon_hunter",
-                --    name = GetSpellInfo(186257),
-                --    args = {
-                --        k = {
-                --            type = "toggle",
-                --            name = function() return format("|T%s:16|t %s", GetSpellTexture(186257), GetSpellInfo(186257)) end,
-                --        }
-                --    }
-                --}
-            }
-        }
-    elseif ID == 4 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
-
-                Rogue = {
-                    order = 1,
-                    type = "multiselect",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return localizedClass
-                    end,
-
-                    values = {
-                        [1966] = GetSpellInfo(1966),
-                        [31224] = GetSpellInfo(31224),
-                        [315496] = GetSpellInfo(315496),
-                        [2823] = GetSpellInfo(2823),
-                        [3408] = GetSpellInfo(3408),
-                        [8679] = GetSpellInfo(8679),
-                        [11327] = GetSpellInfo(11327),
-                        [1784] = GetSpellInfo(1784),
-                        [114018] = GetSpellInfo(114018),
-                        [185311] = GetSpellInfo(185311),
-                        [2983] = GetSpellInfo(2983),
-                        [315584] = GetSpellInfo(315584),
-                        [193538] = GetSpellInfo(193538),
-                    }
-                },
-
-                Assassination = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("259")
-                        return name
-                    end,
-                    values = {
-                        [108211] = GetSpellInfo(108211),
-                        [256735] = GetSpellInfo(256735),
-                    }
-                },
-                Outlaw = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("260")
-                        return name
-                    end,
-                    values = {
-                        [199600] = GetSpellInfo(199600),
-                        [193357] = GetSpellInfo(193357),
-                        [193356] = GetSpellInfo(193356),
-                        [193358] = GetSpellInfo(193358),
-                        [193359] = GetSpellInfo(193359),
-                        [199603] = GetSpellInfo(199603),
-                        [13877] = GetSpellInfo(13877),
-                        [13750] = GetSpellInfo(13750),
-                        [198368] = GetSpellInfo(198368),
-                        [195627] = GetSpellInfo(195627),
-                    }
-                },
-                Subtlety = {
-                    order = 4,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("261")
-                        return name
-                    end,
-                    values = {
-                        [121471] = GetSpellInfo(121471),
-                        [185422] = GetSpellInfo(185422),
-                        [213981] = GetSpellInfo(213981),
-                        [212283] = GetSpellInfo(212283),
-                    }
+                args = {
+                    Warrior = {
+                        order = 1,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_warrior", GetClassInfo(1)) end,
+                        args = {}
+                    },
+                    Paladin= {
+                        order = 2,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_paladin", GetClassInfo(2)) end,
+                        args = {}
+                    },
+                    Hunter = {
+                        order = 3,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_hunter", GetClassInfo(3)) end,
+                        args = {
+                        }
+                    },
+                    Rogue = {
+                        order = 4,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_rogue", GetClassInfo(4)) end,
+                        args = {}
+                    },
+                    Priest = {
+                        order = 5,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_priest", GetClassInfo(5)) end,
+                        args = {}
+                    },
+                    DeathKnight = {
+                        order = 6,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_deathknight", GetClassInfo(6)) end,
+                        args = {}
+                    },
+                    Shaman = {
+                        order = 7,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_shaman", GetClassInfo(7)) end,
+                        args = {}
+                    },
+                    Mage = {
+                        order = 8,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_mage", GetClassInfo(8)) end,
+                        args = {}
+                    },
+                    Warlock = {
+                        order = 9,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_warlock", GetClassInfo(9)) end,
+                        args = {}
+                    },
+                    Monk = {
+                        order = 10,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_monk", GetClassInfo(10)) end,
+                        args = {}
+                    },
+                    Druid = {
+                        order = 11,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_druid", GetClassInfo(11)) end,
+                        args = {}
+                    },
+                    DemonHunter = {
+                        order = 12,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_demonhunter", GetClassInfo(12)) end,
+                        args = {}
+                    },
                 }
-            }
+            },
+            DebuffOption = {
+                order = 3,
+                type = "group",
+                name = L["Debuffs"],
+
+                args = {
+
+                }
+
+            },
         }
-    elseif ID == 5 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
-                Priest = {
-                    order = 1,
-                    type = "multiselect",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return localizedClass
-                    end,
+    }
 
-                    values = {
-                        [19236] = GetSpellInfo(19236),
-                        [17] = GetSpellInfo(17),
-                        [586] = GetSpellInfo(586),
-                        [213602] = GetSpellInfo(213602),
-                    }
-                },
-                Discipline = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("256")
-                        return name
-                    end,
-
-                    values = {
-                        [33206] = GetSpellInfo(33206),
-                        [81782] = GetSpellInfo(81782),
-                        [121557] = GetSpellInfo(121557),
-                    }
-                },
-                Holy = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("257")
-                        return name
-                    end,
-
-                    values = {
-                        [47788] = GetSpellInfo(47788),
-                        [41635] = GetSpellInfo(41635),
-                        [215769] = GetSpellInfo(215769),
-                        [64844] = GetSpellInfo(64844),
-                        [200183] = GetSpellInfo(200183),
-                        [321379] = GetSpellInfo(321379),
-                        [213610] = GetSpellInfo(213610),
-                        [289655] = GetSpellInfo(289655),
-                        [329543] = GetSpellInfo(329543),
-                        [77489] = GetSpellInfo(77489),
-                    }
-                },
-                Shadow = {
-                    order = 4,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("258")
-                        return name
-                    end,
-
-                    values = {
-                        [47585] = GetSpellInfo(47585),
-                        [15286] = GetSpellInfo(15286),
-                        [247776] = GetSpellInfo(247776),
-                        [194249] = GetSpellInfo(194249),
-                    }
-                },
-            }
-        }
-    elseif ID == 6 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
-
-                DeathKnight = {
-                    order = 1,
-                    type = "multiselect",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return localizedClass
-                    end,
-
-                    values = {
-                        [48792] = GetSpellInfo(48792),      --冰錮堅韌
-                        [145629] = GetSpellInfo(145629),    --反魔法力場
-                        [3714] = GetSpellInfo(3714),        --冰霜之徑
-                        [48707] = GetSpellInfo(48707),      --反魔法護罩
-                        [49039] = GetSpellInfo(49039),      --巫妖之軀
-                        [48265] = GetSpellInfo(48265),      --死神逼近
-                    }
-                },
-                Blood = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("250")
-                        return name
-                    end,
-
-                    values = {
-                        [195181] = GetSpellInfo(195181),    --骸骨之盾
-                        [81141] = GetSpellInfo(81141),      --赤血災禍
-                        [55233] = GetSpellInfo(55233),      --血族之裔
-                        [194844] = GetSpellInfo(194844),    --骸骨風暴
-                        [219809] = GetSpellInfo(219809),    --墓碑
-                        [273947] = GetSpellInfo(273947),    --凝血作用
-                        [81256] = GetSpellInfo(81256),      --符文武器幻舞
-                        [212552] = GetSpellInfo(212552),    --闇徑靈行
-                    }
-                },
-                Frost = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("251")
-                        return name
-                    end,
-
-                    values = {
-                        [205146] = GetSpellInfo(205146),   --惡魔呼喚
-                        [264173] = GetSpellInfo(108416),   --魔能之核
-                    }
-                },
-                Unholy = {
-                    order = 4,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("252")
-                        return name
-                    end,
-
-                    values = {
-                        [117828] = GetSpellInfo(117828),    --爆燃
-                        [266030] = GetSpellInfo(266030),    --逆轉熵值
-                        [113858] = GetSpellInfo(113858),    --黑闇之魂:易變
-                        [196099] = GetSpellInfo(196099),    --犧牲魔典
-                    }
-                },
-            }
-        }
-    elseif ID == 9 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
-
-                Warlock = {
-                    order = 1,
-                    type = "multiselect",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return localizedClass
-                    end,
-
-                    values = {
-                        [104773] = GetSpellInfo(104773),    --心志堅定
-                        [48018] = GetSpellInfo(48018),      --惡魔法陣
-                        [333889] = GetSpellInfo(333889),    --惡魔支配
-                        [5697] = GetSpellInfo(5697),        --魔息術
-                        [108416] = GetSpellInfo(108416),   --黑暗契約
-                    }
-                },
-                Affliction = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("265")
-                        return name
-                    end,
-
-                    values = {
-                        [113860] = GetSpellInfo(113860),    --黑闇之魂:悲慘
-                        [196099] = GetSpellInfo(196099),    --犧牲魔典
-                    }
-                },
-                Demonology = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("266")
-                        return name
-                    end,
-
-                    values = {
-                        [205146] = GetSpellInfo(205146),   --惡魔呼喚
-                        [264173] = GetSpellInfo(108416),   --魔能之核
-                    }
-                },
-                Destruction = {
-                    order = 4,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("267")
-                        return name
-                    end,
-
-                    values = {
-                        [117828] = GetSpellInfo(117828),    --爆燃
-                        [266030] = GetSpellInfo(266030),    --逆轉熵值
-                        [113858] = GetSpellInfo(113858),    --黑闇之魂:易變
-                        [196099] = GetSpellInfo(196099),    --犧牲魔典
-                    }
-                },
-            }
-        }
-    elseif ID == 10 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
-
-                Monk = {
-                    order = 1,
-                    type = "multiselect",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return localizedClass
-                    end,
-
-                    values = {
-                        [101643] = GetSpellInfo(101643),
-                        [120954] = GetSpellInfo(120954),
-                        [116841] = GetSpellInfo(116841),
-                    }
-                },
-                Brewmaster = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("268")
-                        return name
-                    end,
-
-                    values = {
-                        [132578] = GetSpellInfo(132578),
-                        [322507] = GetSpellInfo(322507),
-                        [115176] = GetSpellInfo(115176),
-                        [116847] = GetSpellInfo(116847),
-                    }
-                },
-                Mistweaver = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("270")
-                        return name
-                    end,
-
-                    values = {
-                        [116849] = GetSpellInfo(116849),
-                        [116680] = GetSpellInfo(116680),
-                        [124682] = GetSpellInfo(124682),
-                        [119611] = GetSpellInfo(119611),
-                        [191840] = GetSpellInfo(191840),
-                        [209584] = GetSpellInfo(209584),
-                        [196725] = GetSpellInfo(196725),
-                        [202090] = GetSpellInfo(202090),
-                        [243435] = GetSpellInfo(243435),
-                    }
-                },
-                Windwalker = {
-                    order = 4,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("269")
-                        return name
-                    end,
-
-                    values = {
-                        [243435] = GetSpellInfo(243435),
-                        [125174] = GetSpellInfo(125174),
-                        [137639] = GetSpellInfo(137639),
-                        [152173] = GetSpellInfo(152173),
-                        [196741] = GetSpellInfo(196741),
-                    }
-                },
-            }
-        }
-    elseif ID == 12 then
-        playerOption = {
-            order = 1,
-            type = "group",
-            name = L["Player auras"],
-            get = function(info, key)
-                return aceDB.char.enabledSpell[key]
-            end,
-            set = function(info, key, val)
-                aceDB.char.enabledSpell[key] = val
-            end,
-            args = {
-                DemonHunter = {
-                    order = 1,
-                    type = "multiselect",
-                    name = function ()
-                        local localizedClass = UnitClass("player")
-                        return localizedClass
-                    end,
-
-                    values = {
-                        [188501] = GetSpellInfo(188501),
-                        [258920] = GetSpellInfo(258920),
-                    }
-                },
-                Havoc = {
-                    order = 2,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("577")
-                        return name
-                    end,
-
-                    values = {
-                        [162264] = GetSpellInfo(162264),
-                        [212800] = GetSpellInfo(212800),
-                        [209426] = GetSpellInfo(209426),
-                        [196555] = GetSpellInfo(196555),
-                        [208628] = GetSpellInfo(208628),
-                    }
-                },
-                Vengeance = {
-                    order = 3,
-                    type = "multiselect",
-                    name = function()
-                        local _,name = GetSpecializationInfoByID("581")
-                        return name
-                    end,
-
-                    values = {
-                        [203819] = GetSpellInfo(203819),
-                        [326863] = GetSpellInfo(326863),
-                        [187827] = GetSpellInfo(187827),
-                        [203981] = GetSpellInfo(203981),
-                    }
-                },
-            }
-        }
-    end
 end
 
 local options
@@ -730,33 +267,7 @@ local function getOptions()
             type = "group",
             name = L["Plate Enhancement"],
             args = {
-                general = {
-                    order = 1,
-                    type = "group",
-                    name = L["General Settings"],
-                    args = {
-                        info = {
-                            type = "group",
-                            name = "",
-                            desc = "",
-                            guiInline = true,
-                            order = -1,
-                            args = {
-                                version = {
-                                    type = "description",
-                                    name = L["Plate Enhancement"],
-                                    order = 10,
-                                },
-                                author = {
-                                    type = "description",
-                                    name = L["author"] .. " : killangel41",
-                                    order = 20,
-                                },
-                            },
-                        },
-                    },
-                },
-                player = playerOption
+                mainOption = mainOption
             }
         }
     end
@@ -770,27 +281,44 @@ local function SetupOptions()
     getClassOption()
 
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Plate Enhancement", getOptions)
-    optionsFrames.PlateEnhancement = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Plate Enhancement", L["Plate Enhancement"], nil, "general")
-    optionsFrames.PlayerOptions = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Plate Enhancement", L["Player auras"], L["Plate Enhancement"],"player")
+    optionsFrames.PlateEnhancement = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Plate Enhancement", L["Plate Enhancement"], nil,"mainOption")
 end
 
+local function insertClassSpells(classname,spellTable)
+    for i,k in ipairs(spellTable) do
+        mainOption.args.BuffOption.args[classname].args[tostring(i)] ={
+            type = "toggle",
+            name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
+            desc = GetSpellDescription(k),
+            get = function(info)
+                return aceDB.char.enabledSpell[k]
+            end,
+            set = function(info, val)
+                aceDB.char.enabledSpell[k] = val
+            end,
+        }
 
+    end
+end
 
-
+media:Register("font","BIG_BOLD",[[Interface\AddOns\PlateEnhancement\font\BIG_BOLD.TTF]],255 )
 SetupOptions()
 
-for i,k in ipairs(HunterSpells) do
-    playerOption.args.Hunter.args[tostring(i)] ={
-        type = "toggle",
-        name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
-        get = function(info)
-            return aceDB.char.enabledSpell[k]
-        end,
-        set = function(info, val)
-            aceDB.char.enabledSpell[k] = val
-        end,
-    }
-end
+insertClassSpells("Warrior",WarriorSpells)
+insertClassSpells("Paladin",PaladinSpells)
+insertClassSpells("Hunter",HunterSpells)
+insertClassSpells("Rogue",RogueSpells)
+insertClassSpells("Priest",PriestSpells)
+insertClassSpells("DeathKnight",DeathKnightSpells)
+insertClassSpells("Shaman",ShamanSpells)
+insertClassSpells("Mage",MageSpells)
+insertClassSpells("Warlock",WarlockSpells)
+insertClassSpells("Monk",MonkSpells)
+insertClassSpells("Druid",DruidSpells)
+insertClassSpells("DemonHunter",DemonHunterSpells)
+
+
+
 
 --local function addOption()
 --    local panel = CreateFrame("FRAME")

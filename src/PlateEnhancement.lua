@@ -8,55 +8,10 @@ local BuffIcons,eventFrame
 local enabledSpell
 local updateTicker,updateTracker
 local playerInfo = { }
-local WarriorSpells = {
-    23920, 190456, 97463, 18499, 132404, 32216, 118038, 7384, 260708,
-    107574, 248622, 184362, 1719, 275672, 335082, 871, 12975, 184364,
-}
-local PaladinSpells = {
-    132403, 1022, 32223, 465, 183435, 1044, 642, 31884, 31821, 498,
-    54149, 214202, 105809, 216331, 210391, 31850, 86659, 280373, 204018,
-    105809, 184662, 269571, 231895, 223819, 209785,
-}
-HunterSpells = {
-    186257, 186258, 186265, 5384, 199483, 193530, 19574, 268877,
-    257946, 272790,288613, 257622, 260242, 260402, 193534, 194594,
-    266779, 186289, 259388,
-}
-local RogueSpells = {
-    1966, 31224, 315496, 2823, 3408, 8679, 11327, 1784, 114018, 185311,
-    2983, 315584, 193538, 108211, 256735, 199600, 193357, 193356, 193358,
-    193359, 199603, 13877, 13750, 198368, 195627, 121471, 185422, 213981, 212283,
-}
-
-local PriestSpells = {
-    19236, 17, 586, 213602, 33206, 81782, 121557, 47788, 41635, 215769,
-    64844, 200183, 321379, 213610, 289655, 329543, 77489, 47585, 15286,
-    247776, 194249,
-}
-local DeathKnightSpells = {
-}
-local ShamanSpells = {
-}
-
-local MageSpells = {
-}
-
-local WarlockSpells = {
-    104773, 48018, 333889, 5697, 108416, 113860, 196099, 205146,108416,
-    117828, 266030, 113858,
-}
-
-local MonkSpells = {
-    101643, 120954, 116841, 132578, 322507, 115176, 116847, 116849, 116680,
-    124682, 119611, 191840, 209584, 196725, 202090, 243435, 243435, 125174,
-    137639, 152173, 196741,
-}
-local DruidSpells = {
-}
-local DemonHunterSpells = {
-    188501, 258920, 162264, 212800, 209426, 196555, 208628, 203819, 326863,
-    187827, 203981,
-}
+local iconSize,iconSpacing
+local media = LibStub("LibSharedMedia-3.0")
+local XOffset = 0
+local YOffset = 0
 
 local function setAuraTime(time,order,duration)
     if time and time~=0 then
@@ -85,7 +40,7 @@ local function setAuraTime(time,order,duration)
 end
 local function setStackCount(count,sepllID,duration)
     if count ~=0 then
-        if duration == 0 then
+        if duration == 0 and count ~=1 then
             iconFrameTable[sepllID].countText1:SetText(count)
         else
             iconFrameTable[sepllID].countText2:SetText(count)
@@ -104,15 +59,12 @@ end
 
 
 local function setAuraIcon(spellID,time,parent,order,duration,count)
-
     if iconEnable(spellID) then
         iconFrameTable[spellID]:Show()
-        --iconFrameTable[order].texture:SetTexture(GetSpellTexture(spellID))
-        iconFrameTable[spellID]:SetPoint("LEFT", order*20 + order,0)
+        iconFrameTable[spellID]:SetPoint("BOTTOMLEFT", order * iconSize + (order - 1) * iconSpacing ,0)
         iconFrameTable[spellID].coolDown:SetCooldown(time - duration,duration)
         setAuraTime(time,spellID,duration)
         setStackCount(count,spellID,duration)
-
         return true
     else
         return false
@@ -146,7 +98,7 @@ local function updateAura()
     freeIconFrame()
 
     for i=1,40 do
-        local aura = {UnitAura("player",i)}
+        local aura = {UnitBuff("player",i)}
         if aura and (aura[7] == "player" or aura[7] == "pet") then
             if setAuraIcon(aura[10],aura[6], BuffIcons,iconCount,aura[5],aura[3]) == true then
                 iconTable[iconCount] = aura[10]
@@ -158,7 +110,7 @@ local function updateAura()
     end
 
     for i=1,40 do
-        local aura = {UnitAura("pet",i)}
+        local aura = {UnitBuff("pet",i)}
         if aura and (aura[7] == "player" or aura[7] == "pet") then
             if checkForDuplicateIcon(aura[10],iconTable) == false then
                 if setAuraIcon(aura[10],aura[6], BuffIcons,iconCount,aura[5],aura[3]) == true then
@@ -174,16 +126,15 @@ end
 
 local function InitializeDB()
     local defaultSettings = {
-        global = {
-            hideBlizzardAuras = true,
-            iconSize = 20,
-            spells = {
-                ['*'] = {
-                enabled = false,
-                },
-            }
-        },
         char = {
+            font = "BIG_BOLD",
+            iconSize = 20,
+            fontSize = 8,
+            countFont = "BIG_BOLD",
+            countFontSize = 6,
+            iconSpacing = 0,
+            XOffset = 0,
+            YOffset = 0,
             enabledSpell = {
                 ['*'] = true,
                 [32223] = false,
@@ -201,15 +152,41 @@ local function InitializeDB()
                 [196099] = false,
                 [145629] = false,
                 [3714] = false,
+                [546] = false,
+                [292106] = false,
+                [974] = false,
+                [130] = false,
+                [110960] = false,
+                [342246] = false,
+                [48107] = false,
+                [48108] = false,
+                [205473] = false,
+                [69369] = false,
+                [135700] = false,
+                [93622] = false,
+                [33763] = false,
+                [48438] = false,
+                [774] = false,
+                [16870] = false,
+                [48438] = false,
+
             },
         }
     }
     aceDB = LibStub("AceDB-3.0"):New("PlateEnhancementAceDB", defaultSettings)
+
+
 end
 
 local function hideBlizzardAuras()
     if C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil then
         C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.BuffFrame:Hide()
+    end
+end
+
+local function setBuffFramePoint()
+    if C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil then
+        BuffIcons:SetPoint("LEFT",C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.BuffFrame,"LEFT",-(iconSize) + XOffset,((iconSize-20)/3)+2 + YOffset)
     end
 end
 
@@ -253,6 +230,7 @@ end
 
 local function OnUpdate()
     hideBlizzardAuras()
+    setBuffFramePoint()
     updateAura()
     if  C_NamePlate.GetNamePlateForUnit("player", issecure()) == nil and updateTracker == true then
         freeIconFrame()
@@ -265,7 +243,6 @@ end
 local function namePlateUpdate()
 
     if  C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil and updateTracker == false then
-        BuffIcons:SetPoint("LEFT",C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.BuffFrame,"LEFT",-21,2)
         loadEnableSpell()
         updateTracker = true
         updateTicker = C_Timer.NewTicker(0.1,OnUpdate)
@@ -273,17 +250,25 @@ local function namePlateUpdate()
 end
 
 local function createBuffIconsFrame()
+    iconSize = aceDB.char.iconSize
+    iconSpacing = aceDB.char.iconSpacing
+    local font = aceDB.char.font
+    local fontSize = aceDB.char.fontSize
+    local countFont = aceDB.char.font
+    local countFontSize = aceDB.char.countFontSize
     BuffIcons = CreateFrame("Frame",nil,nil)
-    BuffIcons:SetSize(200,20)
+    BuffIcons:SetSize(iconSize*10,iconSize)
 
     for _,i in ipairs(playerInfo.classSpells) do
         iconFrameTable[i] = CreateFrame("Frame",nil,BuffIcons)
-        iconFrameTable[i]:SetSize(20,20)
+        iconFrameTable[i]:SetSize(iconSize,iconSize)
+
+        iconFrameTable[i].spellID = i
 
 
         local Texture = iconFrameTable[i]:CreateTexture(nil,"ARTWORK")
         Texture:SetPoint("CENTER")
-        Texture:SetSize(20,20)
+        Texture:SetSize(iconSize,iconSize)
         Texture:SetTexture(GetSpellTexture(i))
         iconFrameTable[i].texture = Texture
 
@@ -293,25 +278,65 @@ local function createBuffIconsFrame()
         iconFrameTable[i].coolDown = coolDown
 
         local timeText1 = iconFrameTable[i]:CreateFontString(nil, "OVERLAY")
-        timeText1:SetFont("Fonts\\bKAI00M.TTF", 8, "OUTLINE")
+        timeText1:SetFont(media.MediaTable.font[font], fontSize, "OUTLINE")
         timeText1:SetPoint("CENTER", 0, 0)
         iconFrameTable[i].timeText1 = timeText1
 
         local countText1 = iconFrameTable[i]:CreateFontString(nil, "OVERLAY")
-        countText1:SetFont("Fonts\\bKAI00M.TTF", 6, "OUTLINE")
+        countText1:SetFont(media.MediaTable.font[countFont], countFontSize, "OUTLINE")
         countText1:SetPoint("BOTTOMRIGHT", 0, 0)
         iconFrameTable[i].countText1 = countText1
 
         local timeText2 = coolDown:CreateFontString(nil, "OVERLAY")
-        timeText2:SetFont("Fonts\\bKAI00M.TTF", 8, "OUTLINE")
+        timeText2:SetFont(media.MediaTable.font[font], fontSize, "OUTLINE")
         timeText2:SetPoint("CENTER", 0, 0)
         iconFrameTable[i].timeText2 = timeText2
 
         local countText2 = coolDown:CreateFontString(nil, "OVERLAY")
-        countText2:SetFont("Fonts\\bKAI00M.TTF", 6, "OUTLINE")
+        countText2:SetFont(media.MediaTable.font[countFont], countFontSize, "OUTLINE")
         countText2:SetPoint("BOTTOMRIGHT", 0, 0)
         iconFrameTable[i].countText2 = countText2
     end
+end
+
+function adjustmentFont()
+    local size = aceDB.char.fontSize
+    local font = aceDB.char.font
+    for _,i in pairs(iconFrameTable) do
+        iconFrameTable[i.spellID].timeText1:SetFont(media.MediaTable.font[font], size, "OUTLINE")
+        iconFrameTable[i.spellID].timeText2:SetFont(media.MediaTable.font[font], size, "OUTLINE")
+    end
+end
+
+function adjustmentCountFont()
+    local size = aceDB.char.countFontSize
+    local font = aceDB.char.countFont
+    for _,i in pairs(iconFrameTable) do
+        iconFrameTable[i.spellID].countText1:SetFont(media.MediaTable.font[font], size, "OUTLINE")
+        iconFrameTable[i.spellID].countText2:SetFont(media.MediaTable.font[font], size, "OUTLINE")
+    end
+end
+
+function adjustmentIconSize()
+    iconSize = aceDB.char.iconSize
+    BuffIcons:SetSize(iconSize*10,iconSize)
+
+    for _,i in pairs(iconFrameTable) do
+        iconFrameTable[i.spellID]:SetSize(iconSize,iconSize)
+        iconFrameTable[i.spellID].texture:SetSize(iconSize,iconSize)
+    end
+end
+
+function adjustmentIconSpacing()
+    iconSpacing = aceDB.char.iconSpacing
+end
+
+function setXOffset(offset)
+    XOffset = offset
+end
+
+function setYOffset(offset)
+    YOffset = offset
 end
 
 local function EventHandler(self, event,...)
