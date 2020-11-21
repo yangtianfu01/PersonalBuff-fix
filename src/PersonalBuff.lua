@@ -135,6 +135,8 @@ local function InitializeDB()
             iconSpacing = 0,
             XOffset = 0,
             YOffset = 0,
+            customTexture = true,
+            barTexture = "Flat_N",
             enabledSpell = {
                 ['*'] = true,
                 [32223] = false,
@@ -237,8 +239,14 @@ local function getPlayerInfo()
 end
 
 local function setNameplateBarTexture()
-    C_NamePlate.GetNamePlateForUnit("player", issecure()).driverFrame.classNamePlatePowerBar.Texture:SetTexture("Interface\\AddOns\\PersonalBuff\\texture\\nameplate.blp")
-    C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.healthBar.barTexture:SetTexture("Interface\\AddOns\\PersonalBuff\\texture\\nameplate.blp")
+    if aceDB.char.customTexture then
+        local barTexture = aceDB.char.barTexture
+        local nameplate = C_NamePlate.GetNamePlateForUnit("player", issecure())
+        if nameplate then
+            nameplate.driverFrame.classNamePlatePowerBar.Texture:SetTexture(media.MediaTable.statusbar[barTexture])
+            nameplate.UnitFrame.healthBar.barTexture:SetTexture(media.MediaTable.statusbar[barTexture])
+        end
+    end
 end
 
 
@@ -258,9 +266,9 @@ local function namePlateUpdate()
 
     if  C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil and updateTracker == false then
         loadEnableSpell()
+        setNameplateBarTexture()
         updateTracker = true
         updateTicker = C_Timer.NewTicker(0.1,OnUpdate)
-
     end
 end
 

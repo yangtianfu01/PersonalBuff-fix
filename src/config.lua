@@ -157,6 +157,43 @@ local function getClassOption()
                                     adjustmentCountFont()
                                 end,
                             },
+                            customTexture = {
+                                order = 8,
+                                type = "toggle",
+                                name = L["customTexture"],
+                                confirm = function(info, v)
+                                    if not v then
+                                        return L["Disabling the texture will make them reset next time you relog, are you sure?"]
+                                    end
+                                end ,
+                                get = function(info)
+                                    return aceDB.char.customTexture
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.customTexture = val
+                                end,
+                            },
+                            barTexture = {
+                                order = 9,
+                                type = "select",
+                                style = "dropdown",
+                                name = L["personalBarTexture"],
+                                values = media:List("statusbar"),
+                                itemControl = "DDI-Statusbar",
+                                disabled = function ()
+                                    return not(aceDB.char.customTexture)
+                                end,
+                                get = function(info)
+                                    for i, v in next, media:List("statusbar") do
+                                        if v == aceDB.char.barTexture then return i end
+                                    end
+                                end,
+                                set = function(info,key)
+                                    local list = media:List("statusbar")
+                                    local texture = list[key]
+                                    aceDB.char.barTexture = texture
+                                end,
+                            },
                         },
 
                     }
@@ -309,6 +346,7 @@ local function insertClassSpells(classname,spellTable)
 end
 
 media:Register("font","BIG_BOLD",[[Interface\AddOns\PersonalBuff\font\BIG_BOLD.TTF]],255 )
+media:Register("statusbar","Flat_N",[[Interface\AddOns\PersonalBuff\texture\nameplate.blp]],255 )
 SetupOptions()
 
 insertClassSpells("Warrior",WarriorSpells)
