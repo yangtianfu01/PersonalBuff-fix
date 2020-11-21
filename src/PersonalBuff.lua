@@ -243,7 +243,9 @@ local function setNameplateBarTexture()
         local barTexture = aceDB.char.barTexture
         local nameplate = C_NamePlate.GetNamePlateForUnit("player", issecure())
         if nameplate then
-            original = nameplate.UnitFrame.healthBar.barTexture:GetTexture()
+            if original == nil then
+                original = nameplate.UnitFrame.healthBar.barTexture:GetTexture()
+            end
             nameplate.driverFrame.classNamePlatePowerBar.Texture:SetTexture(media.MediaTable.statusbar[barTexture])
             nameplate.UnitFrame.healthBar.barTexture:SetTexture(media.MediaTable.statusbar[barTexture])
         end
