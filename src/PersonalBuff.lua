@@ -237,18 +237,27 @@ local function getPlayerInfo()
 
     addBloodlust()
 end
-
+local original
 local function setNameplateBarTexture()
     if aceDB.char.customTexture then
         local barTexture = aceDB.char.barTexture
         local nameplate = C_NamePlate.GetNamePlateForUnit("player", issecure())
         if nameplate then
+            original = nameplate.UnitFrame.healthBar.barTexture:GetTexture()
             nameplate.driverFrame.classNamePlatePowerBar.Texture:SetTexture(media.MediaTable.statusbar[barTexture])
             nameplate.UnitFrame.healthBar.barTexture:SetTexture(media.MediaTable.statusbar[barTexture])
         end
     end
 end
 
+local function healthBarReset(nameplateToken)
+    local playerNameplate = C_NamePlate.GetNamePlateForUnit("player", issecure())
+    if playerNameplate ~=nil and playerNameplate.namePlateUnitToken == nameplateToken then
+    elseif original ~= nil then
+        local nameplate = C_NamePlate.GetNamePlateForUnit(nameplateToken, issecure())
+        nameplate.UnitFrame.healthBar.barTexture:SetTexture(original)
+    end
+end
 
 local function OnUpdate()
     hideBlizzardAuras()
@@ -373,6 +382,9 @@ local function EventHandler(self, event,...)
         if  C_NamePlate.GetNamePlateForUnit("player", issecure()) == nil then
             freeIconFrame()
         end
+    elseif event == "NAME_PLATE_UNIT_ADDED" then
+        healthBarReset(...)
+        namePlateUpdate()
     else
         namePlateUpdate()
     end
