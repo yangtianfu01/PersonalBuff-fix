@@ -1,6 +1,6 @@
 
-local L = LibStub("AceLocale-3.0"):NewLocale("PlateEnhancement", "enUS", true)
-L["Plate Enhancement"] = "Plate Enhancement"
+local L = LibStub("AceLocale-3.0"):NewLocale("PersonalBuff", "enUS", true)
+L["Personal Buff"] = "Personal Buff"
 L["General Settings"] = "General Settings"
 L["Buffs"] = "Buffs"
 L["author"] = "author"

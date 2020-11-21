@@ -6,7 +6,7 @@
 
 
 local AceConfig = LibStub("AceConfig-3.0")
-local L = LibStub("AceLocale-3.0"):GetLocale("PlateEnhancement")
+local L = LibStub("AceLocale-3.0"):GetLocale("PersonalBuff")
 local media = LibStub("LibSharedMedia-3.0")
 
 local mainOption
@@ -243,18 +243,25 @@ local function getClassOption()
                         name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_demonhunter", GetClassInfo(12)) end,
                         args = {}
                     },
+
+                    Bloodlust = {
+                        order = 13,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", GetSpellTexture(2825), GetSpellInfo(2825)) end,
+                        args = {}
+                    },
                 }
             },
-            DebuffOption = {
-                order = 3,
-                type = "group",
-                name = L["Debuffs"],
-
-                args = {
-
-                }
-
-            },
+            --DebuffOption = {
+            --    order = 3,
+            --    type = "group",
+            --    name = L["Debuffs"],
+            --
+            --    args = {
+            --
+            --    }
+            --
+            --},
         }
     }
 
@@ -265,7 +272,7 @@ local function getOptions()
     if not options then
         options = {
             type = "group",
-            name = L["Plate Enhancement"],
+            name = L["Personal Buff"],
             args = {
                 mainOption = mainOption
             }
@@ -280,8 +287,8 @@ local function SetupOptions()
     optionsFrames = {}
     getClassOption()
 
-    LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Plate Enhancement", getOptions)
-    optionsFrames.PlateEnhancement = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Plate Enhancement", L["Plate Enhancement"], nil,"mainOption")
+    LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Personal Buff", getOptions)
+    optionsFrames.PersonalBuff = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Personal Buff", L["Personal Buff"], nil,"mainOption")
 end
 
 local function insertClassSpells(classname,spellTable)
@@ -301,7 +308,7 @@ local function insertClassSpells(classname,spellTable)
     end
 end
 
-media:Register("font","BIG_BOLD",[[Interface\AddOns\PlateEnhancement\font\BIG_BOLD.TTF]],255 )
+media:Register("font","BIG_BOLD",[[Interface\AddOns\PersonalBuff\font\BIG_BOLD.TTF]],255 )
 SetupOptions()
 
 insertClassSpells("Warrior",WarriorSpells)
@@ -316,27 +323,4 @@ insertClassSpells("Warlock",WarlockSpells)
 insertClassSpells("Monk",MonkSpells)
 insertClassSpells("Druid",DruidSpells)
 insertClassSpells("DemonHunter",DemonHunterSpells)
-
-
-
-
---local function addOption()
---    local panel = CreateFrame("FRAME")
---    panel.name = "Plate Enhancement"
---    InterfaceOptions_AddCategory(panel)
---
---    local classPanel = CreateFrame("Frame",nil,panel)
---    classPanel.name = "class"
---    classPanel.parent = panel.name
---    InterfaceOptions_AddCategory(classPanel)
---
---end
---
---addOption()
-
-
---local DemonHunterSpell = {188501,258920}
---local DemonHunterSpellDict = {}
---for _,k in ipairs(DemonHunterSpell) do
---    DemonHunterSpellDict[k] = GetSpellInfo(k)
---end
+insertClassSpells("Bloodlust",Bloodlust)

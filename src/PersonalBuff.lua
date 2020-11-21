@@ -173,7 +173,7 @@ local function InitializeDB()
             },
         }
     }
-    aceDB = LibStub("AceDB-3.0"):New("PlateEnhancementAceDB", defaultSettings)
+    aceDB = LibStub("AceDB-3.0"):New("PersonalBuffAceDB", defaultSettings)
 
 
 end
@@ -196,6 +196,12 @@ local function loadEnableSpell()
         if aceDB.char.enabledSpell[i] == true then
             table.insert(enabledSpell,i)
         end
+    end
+end
+
+local function addBloodlust()
+    for _,i in pairs(Bloodlust) do
+        table.insert(playerInfo.classSpells,i)
     end
 end
 
@@ -226,7 +232,15 @@ local function getPlayerInfo()
     elseif ID == 12 then
         playerInfo.classSpells = DemonHunterSpells
     end
+
+    addBloodlust()
 end
+
+local function setNameplateBarTexture()
+    C_NamePlate.GetNamePlateForUnit("player", issecure()).driverFrame.classNamePlatePowerBar.Texture:SetTexture("Interface\\AddOns\\PersonalBuff\\texture\\nameplate.blp")
+    C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.healthBar.barTexture:SetTexture("Interface\\AddOns\\PersonalBuff\\texture\\nameplate.blp")
+end
+
 
 local function OnUpdate()
     hideBlizzardAuras()
@@ -246,6 +260,7 @@ local function namePlateUpdate()
         loadEnableSpell()
         updateTracker = true
         updateTicker = C_Timer.NewTicker(0.1,OnUpdate)
+
     end
 end
 

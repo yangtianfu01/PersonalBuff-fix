@@ -3,8 +3,8 @@
 --- Created by kira1101.
 --- DateTime: 2020/10/31 下午 03:11
 ---
-local L = LibStub("AceLocale-3.0"):NewLocale("PlateEnhancement", "zhTW")
-L["Plate Enhancement"] = "血條增強"
+local L = LibStub("AceLocale-3.0"):NewLocale("PersonalBuff", "zhTW")
+L["Personal Buff"] = "血條增益"
 L["General Settings"] = "一般設定"
 L["Buffs"] = "增益"
 L["author"] = "作者"
