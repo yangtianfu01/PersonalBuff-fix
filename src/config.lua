@@ -9,7 +9,8 @@ local AceConfig = LibStub("AceConfig-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("PersonalBuff")
 local media = LibStub("LibSharedMedia-3.0")
 
-local mainOption
+local mainOption,options
+
 local function getClassOption()
     mainOption = {
         type = "group",
@@ -196,6 +197,14 @@ local function getClassOption()
                             },
                         },
 
+                    },
+                    sort = {
+                        order = 1,
+                        name = L["Sort"],
+                        type = "group",
+                        args ={
+
+                        }
                     }
                 }
 
@@ -304,7 +313,7 @@ local function getClassOption()
 
 end
 
-local options
+
 local function getOptions()
     if not options then
         options = {
@@ -330,8 +339,9 @@ end
 
 local function insertClassSpells(classname,spellTable)
     for i,k in ipairs(spellTable) do
-        mainOption.args.BuffOption.args[classname].args[tostring(i)] ={
+        mainOption.args.BuffOption.args[classname].args[tostring(i)] = {
             type = "toggle",
+            order = i,
             name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
             desc = GetSpellDescription(k),
             get = function(info)
@@ -343,6 +353,80 @@ local function insertClassSpells(classname,spellTable)
         }
 
     end
+end
+
+local function insertSpellsSort()
+    local _,_,ID = UnitClass("player")
+    local classSpells
+    if ID == 1 then
+        classSpells = WarriorSpells
+    elseif ID == 2 then
+        classSpells = PaladinSpells
+    elseif ID == 3 then
+        classSpells = HunterSpells
+    elseif ID == 4 then
+        classSpells = RogueSpells
+    elseif ID == 5 then
+        classSpells = PriestSpells
+    elseif ID == 6 then
+        classSpells = DeathKnightSpells
+    elseif ID == 7 then
+        classSpells = ShamanSpells
+    elseif ID == 8 then
+        classSpells = MageSpells
+    elseif ID == 9 then
+        classSpells = WarlockSpells
+    elseif ID == 10 then
+        classSpells = MonkSpells
+    elseif ID == 11 then
+        classSpells = DruidSpells
+    elseif ID == 12 then
+        classSpells = DemonHunterSpells
+    end
+
+    for i,k in ipairs(classSpells) do
+        mainOption.args.iconOption.args.sort.args[tostring(i)] = {
+            order = i,
+            type = "range",
+            name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
+            desc = L["The higher the rank ordering more left"],
+            max = 15,
+            min = -15,
+            step = 1,
+            get = function(info)
+                return aceDB.char.spellRank[k]
+            end,
+            set = function(info, val)
+                aceDB.char.spellRank[k] = val
+            end,
+        }
+    end
+    mainOption.args.iconOption.args.sort.args[tostring(#(mainOption.args.iconOption.args.sort.args)+1)] = {
+        order = -1,
+        type = "range",
+        name = function() return format("|T%s:16|t %s", GetSpellTexture(2825), GetSpellInfo(2825)) end,
+        desc = L["The higher the rank ordering more left"],
+        max = 15,
+        min = -15,
+        step = 1,
+        get = function(info)
+            return aceDB.char.spellRank[2825]
+        end,
+        set = function(info, val)
+            aceDB.char.spellRank[32182] = val
+            aceDB.char.spellRank[2825] = val
+            aceDB.char.spellRank[80353] = val
+            aceDB.char.spellRank[264667] = val
+            aceDB.char.spellRank[178207] = val
+            aceDB.char.spellRank[230935] = val
+            aceDB.char.spellRank[256740] = val
+            aceDB.char.spellRank[292686] = val
+        end,
+    }
+end
+
+function setDBoptions()
+    mainOption.args.iconOption.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(aceDB)
 end
 
 media:Register("font","BIG_BOLD",[[Interface\AddOns\PersonalBuff\font\BIG_BOLD.TTF]],255 )
@@ -362,3 +446,5 @@ insertClassSpells("Monk",MonkSpells)
 insertClassSpells("Druid",DruidSpells)
 insertClassSpells("DemonHunter",DemonHunterSpells)
 insertClassSpells("Bloodlust",Bloodlust)
+insertSpellsSort()
+

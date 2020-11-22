@@ -12,6 +12,7 @@ local iconSize,iconSpacing
 local media = LibStub("LibSharedMedia-3.0")
 local XOffset = 0
 local YOffset = 0
+local enableAuraTable = {}
 
 local function setAuraTime(time,order,duration)
     if time and time~=0 then
@@ -58,9 +59,10 @@ local function iconEnable(spellID)
 end
 
 
-local function setAuraIcon(spellID,time,parent,order,duration,count)
+local function setAuraIcon(spellID,time,parent,order,duration,count,alpha)
     if iconEnable(spellID) then
         iconFrameTable[spellID]:Show()
+        iconFrameTable[spellID]:SetAlpha(alpha)
         iconFrameTable[spellID]:SetPoint("BOTTOMLEFT", order * iconSize + (order - 1) * iconSpacing ,0)
         iconFrameTable[spellID].coolDown:SetCooldown(time - duration,duration)
         setAuraTime(time,spellID,duration)
@@ -69,15 +71,6 @@ local function setAuraIcon(spellID,time,parent,order,duration,count)
     else
         return false
     end
-end
-
-local function checkForDuplicateIcon(SpellID,iconTable)
-    for _,iconID in ipairs(iconTable) do
-        if SpellID == iconID then
-            return true
-        end
-    end
-    return false
 end
 
 local function freeIconFrame()
@@ -91,35 +84,42 @@ local function freeIconFrame()
         iconFrameTable[i].countText2:SetText("")
     end
 end
-local function updateAura()
-    local iconCount = 1
-    local iconTable = {}
 
+function RankCompare(a,b)
+    return a.Rank > b.Rank
+end
+
+local function getEnableAuraTable(aura)
+    if iconEnable(aura[10]) then
+        for _,i in ipairs(enableAuraTable) do
+            if i[10] == aura[10] then
+                return
+            end
+        end
+        aura.Rank = aceDB.char.spellRank[aura[10]]
+        table.insert(enableAuraTable,aura)
+    end
+end
+
+local function updateAura()
+    local alpha = C_NamePlate.GetNamePlateForUnit("player", issecure()):GetAlpha()
+
+    enableAuraTable = {}
     freeIconFrame()
 
     for i=1,40 do
         local aura = {UnitBuff("player",i)}
-        if aura and (aura[7] == "player" or aura[7] == "pet") then
-            if setAuraIcon(aura[10],aura[6], BuffIcons,iconCount,aura[5],aura[3]) == true then
-                iconTable[iconCount] = aura[10]
-                iconCount = iconCount + 1
-            end
-        else
-            break
-        end
+        getEnableAuraTable(aura)
     end
 
     for i=1,40 do
         local aura = {UnitBuff("pet",i)}
-        if aura and (aura[7] == "player" or aura[7] == "pet") then
-            if checkForDuplicateIcon(aura[10],iconTable) == false then
-                if setAuraIcon(aura[10],aura[6], BuffIcons,iconCount,aura[5],aura[3]) == true then
-                    iconCount = iconCount + 1
-                end
-            end
-        else
-            break
-        end
+        getEnableAuraTable(aura)
+    end
+    table.sort(enableAuraTable,RankCompare)
+
+    for i,k in ipairs(enableAuraTable) do
+        setAuraIcon(k[10],k[6], BuffIcons,i,k[5],k[3],alpha)
     end
 
 end
@@ -171,13 +171,22 @@ local function InitializeDB()
                 [774] = false,
                 [16870] = false,
                 [48438] = false,
-
             },
+            spellRank = {
+                ['*'] = 0,
+                [32182] = 15,
+                [2825] = 15,
+                [80353] = 15,
+                [264667] = 15,
+                [178207] = 15,
+                [230935] = 15,
+                [256740] = 15,
+                [292686] = 15,
+            }
         }
     }
     aceDB = LibStub("AceDB-3.0"):New("PersonalBuffAceDB", defaultSettings)
-
-
+    setDBoptions()
 end
 
 local function hideBlizzardAuras()
@@ -265,17 +274,18 @@ local function OnUpdate()
     hideBlizzardAuras()
     setBuffFramePoint()
     updateAura()
-    if  C_NamePlate.GetNamePlateForUnit("player", issecure()) == nil and updateTracker == true then
-        freeIconFrame()
-        updateTracker = false
-        updateTicker:Cancel()
-    end
+end
 
+local playerNameplateToken
+local function getPlayerNameplateToken()
+    playerNameplateToken = C_NamePlate.GetNamePlateForUnit("player", issecure()).namePlateUnitToken
 end
 
 local function namePlateUpdate()
 
     if  C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil and updateTracker == false then
+        hideBlizzardAuras()
+        getPlayerNameplateToken()
         loadEnableSpell()
         setNameplateBarTexture()
         updateTracker = true
@@ -381,8 +391,11 @@ local function EventHandler(self, event,...)
         createBuffIconsFrame()
 
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
-        if  C_NamePlate.GetNamePlateForUnit("player", issecure()) == nil then
+        if  playerNameplateToken == ... then
             freeIconFrame()
+            updateTracker = false
+            updateTicker:Cancel()
+            playerNameplateToken = nil
         end
     elseif event == "NAME_PLATE_UNIT_ADDED" then
         healthBarReset(...)
