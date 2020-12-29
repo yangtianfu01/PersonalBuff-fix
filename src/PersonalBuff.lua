@@ -102,19 +102,27 @@ local function getEnableAuraTable(aura)
 end
 
 local function updateAura()
-    local alpha = C_NamePlate.GetNamePlateForUnit("player", issecure()):GetAlpha()
+    local alpha = 1
+    if C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil then
+        alpha = C_NamePlate.GetNamePlateForUnit("player", issecure()):GetAlpha()
+    end
 
     enableAuraTable = {}
     freeIconFrame()
 
     for i=1,40 do
-        local aura = {UnitBuff("player",i)}
-        getEnableAuraTable(aura)
+        local Buff = {UnitBuff("player",i)}
+        getEnableAuraTable(Buff)
     end
 
     for i=1,40 do
-        local aura = {UnitBuff("pet",i)}
-        getEnableAuraTable(aura)
+        local Debuff = {UnitDebuff("player",i)}
+        getEnableAuraTable(Debuff)
+    end
+
+    for i=1,40 do
+        local petBuff = { UnitBuff("pet",i)}
+        getEnableAuraTable(petBuff)
     end
     table.sort(enableAuraTable,RankCompare)
 
@@ -182,7 +190,11 @@ local function InitializeDB()
                 [230935] = 15,
                 [256740] = 15,
                 [292686] = 15,
-            }
+            },
+            customSpell = {
+                340880,
+            },
+
         }
     }
     aceDB = LibStub("AceDB-3.0"):New("PersonalBuffAceDB", defaultSettings)
@@ -216,35 +228,42 @@ local function addBloodlust()
     end
 end
 
+local function addCustomSpellToTable()
+    for _,i in pairs(aceDB.char.customSpell) do
+        table.insert(playerInfo.classSpells,i)
+    end
+end
+
 local function getPlayerInfo()
     local _,_,ID = UnitClass("player")
     if ID == 1 then
-        playerInfo.classSpells = WarriorSpells
+        playerInfo.classSpells = shallowcopy(WarriorSpells)
     elseif ID == 2 then
-        playerInfo.classSpells = PaladinSpells
+        playerInfo.classSpells = shallowcopy(PaladinSpells)
     elseif ID == 3 then
-        playerInfo.classSpells = HunterSpells
+        playerInfo.classSpells = shallowcopy(HunterSpells)
     elseif ID == 4 then
-        playerInfo.classSpells = RogueSpells
+        playerInfo.classSpells = shallowcopy(RogueSpells)
     elseif ID == 5 then
-        playerInfo.classSpells = PriestSpells
+        playerInfo.classSpells = shallowcopy(PriestSpells)
     elseif ID == 6 then
-        playerInfo.classSpells = DeathKnightSpells
+        playerInfo.classSpells = shallowcopy(DeathKnightSpells)
     elseif ID == 7 then
-        playerInfo.classSpells = ShamanSpells
+        playerInfo.classSpells = shallowcopy(ShamanSpells)
     elseif ID == 8 then
-        playerInfo.classSpells = MageSpells
+        playerInfo.classSpells = shallowcopy(MageSpells)
     elseif ID == 9 then
-        playerInfo.classSpells = WarlockSpells
+        playerInfo.classSpells = shallowcopy(WarlockSpells)
     elseif ID == 10 then
-        playerInfo.classSpells = MonkSpells
+        playerInfo.classSpells = shallowcopy(MonkSpells)
     elseif ID == 11 then
-        playerInfo.classSpells = DruidSpells
+        playerInfo.classSpells = shallowcopy(DruidSpells)
     elseif ID == 12 then
-        playerInfo.classSpells = DemonHunterSpells
+        playerInfo.classSpells = shallowcopy(DemonHunterSpells)
     end
 
     addBloodlust()
+    addCustomSpellToTable()
 end
 local original
 local function setNameplateBarTexture()
@@ -255,7 +274,9 @@ local function setNameplateBarTexture()
             if original == nil then
                 original = nameplate.UnitFrame.healthBar.barTexture:GetTexture()
             end
-            nameplate.driverFrame.classNamePlatePowerBar.Texture:SetTexture(media.MediaTable.statusbar[barTexture])
+            if nameplate.driverFrame.classNamePlatePowerBar then
+                nameplate.driverFrame.classNamePlatePowerBar.Texture:SetTexture(media.MediaTable.statusbar[barTexture])
+            end
             nameplate.UnitFrame.healthBar.barTexture:SetTexture(media.MediaTable.statusbar[barTexture])
         end
     end
@@ -292,6 +313,8 @@ local function namePlateUpdate()
         updateTicker = C_Timer.NewTicker(0.1,OnUpdate)
     end
 end
+
+
 
 local function createBuffIconsFrame()
     iconSize = aceDB.char.iconSize
@@ -389,6 +412,8 @@ local function EventHandler(self, event,...)
         getPlayerInfo()
         loadEnableSpell()
         createBuffIconsFrame()
+        addCustomSpell()
+        insertSpellsSort()
 
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
         if  playerNameplateToken == ... then
@@ -414,6 +439,26 @@ local function registerAuraEvent()
     eventFrame:SetScript("OnEvent", EventHandler)
 end
 
+function resetBuffIconsFrame()
+    iconFrameTable = nil
+    iconFrameTable = {}
+    getPlayerInfo()
+    createBuffIconsFrame()
+end
+
 registerAuraEvent()
 updateTracker = false
 
+function shallowcopy(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in pairs(orig) do
+            copy[orig_key] = orig_value
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end

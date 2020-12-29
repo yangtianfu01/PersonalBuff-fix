@@ -11,6 +11,11 @@ local media = LibStub("LibSharedMedia-3.0")
 
 local mainOption,options
 
+local function resetSpellSort()
+    mainOption.args.iconOption.args.sort.args = {}
+    insertSpellsSort()
+end
+
 local function getClassOption()
     mainOption = {
         type = "group",
@@ -296,6 +301,54 @@ local function getClassOption()
                         name = function() return format("|T%s:16|t %s", GetSpellTexture(2825), GetSpellInfo(2825)) end,
                         args = {}
                     },
+
+                    customSpell = {
+                        order = 13,
+                        type = "group",
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Trade_engineering", "Custom") end,
+                        args = {
+                            description = {
+                                order = 0,
+                                type = "description",
+                                name = "Enter the spell 'ID'",
+                                width = "full"
+                            },
+                            input = {
+                                order = 1,
+                                type = "input",
+                                name = "",
+                                width = "full",
+                                set = function (info, v)
+                                    table.insert(aceDB.char.customSpell,tonumber(v))
+                                    addCustomSpell()
+                                    resetBuffIconsFrame()
+                                    resetSpellSort()
+                                end,
+                                validate = function(info, v)
+                                    local check = true
+                                    for i,k in ipairs(aceDB.char.customSpell) do
+                                        if k == tonumber(v) then
+                                            check = false
+                                        end
+                                    end
+
+                                    if GetSpellInfo(v) == nil then
+                                        return "please check spell id"
+                                    elseif check == false then
+                                        return "spell is already existed"
+                                    else
+                                        return true
+                                    end
+                                end ,
+                                confirm = function(info, v)
+                                    if GetSpellInfo(v) ~= nil then
+                                        return format("|T%s:16|t %s", GetSpellTexture(v), GetSpellInfo(v))
+                                    end
+                                end ,
+                            },
+
+                        }
+                    },
                 }
             },
             --DebuffOption = {
@@ -355,7 +408,7 @@ local function insertClassSpells(classname,spellTable)
     end
 end
 
-local function insertSpellsSort()
+function insertSpellsSort()
     local _,_,ID = UnitClass("player")
     local classSpells
     if ID == 1 then
@@ -383,7 +436,7 @@ local function insertSpellsSort()
     elseif ID == 12 then
         classSpells = DemonHunterSpells
     end
-
+    local index = 1
     for i,k in ipairs(classSpells) do
         mainOption.args.iconOption.args.sort.args[tostring(i)] = {
             order = i,
@@ -400,8 +453,27 @@ local function insertSpellsSort()
                 aceDB.char.spellRank[k] = val
             end,
         }
+        index = index + 1
     end
-    mainOption.args.iconOption.args.sort.args[tostring(#(mainOption.args.iconOption.args.sort.args)+1)] = {
+    for i,k in ipairs(aceDB.char.customSpell) do
+        mainOption.args.iconOption.args.sort.args[tostring(index)] = {
+            order = index,
+            type = "range",
+            name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
+            desc = L["The higher the rank ordering more left"],
+            max = 15,
+            min = -15,
+            step = 1,
+            get = function(info)
+                return aceDB.char.spellRank[k]
+            end,
+            set = function(info, val)
+                aceDB.char.spellRank[k] = val
+            end,
+        }
+        index = index + 1
+    end
+    mainOption.args.iconOption.args.sort.args[tostring(index)] = {
         order = -1,
         type = "range",
         name = function() return format("|T%s:16|t %s", GetSpellTexture(2825), GetSpellInfo(2825)) end,
@@ -421,8 +493,26 @@ local function insertSpellsSort()
             aceDB.char.spellRank[230935] = val
             aceDB.char.spellRank[256740] = val
             aceDB.char.spellRank[292686] = val
+            aceDB.char.spellRank[340880] = val
         end,
     }
+end
+
+function addCustomSpell()
+    for i,k in ipairs(aceDB.char.customSpell) do
+        mainOption.args.BuffOption.args.customSpell.args[tostring(i+2)] = {
+            type = "toggle",
+            order = i+2,
+            name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
+            desc = GetSpellDescription(k),
+            get = function(info)
+                return aceDB.char.enabledSpell[k]
+            end,
+            set = function(info, val)
+                aceDB.char.enabledSpell[k] = val
+            end,
+        }
+    end
 end
 
 function setDBoptions()
@@ -446,5 +536,5 @@ insertClassSpells("Monk",MonkSpells)
 insertClassSpells("Druid",DruidSpells)
 insertClassSpells("DemonHunter",DemonHunterSpells)
 insertClassSpells("Bloodlust",Bloodlust)
-insertSpellsSort()
+
 
