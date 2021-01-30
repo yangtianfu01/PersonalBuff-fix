@@ -13,6 +13,8 @@ local media = LibStub("LibSharedMedia-3.0")
 local XOffset = 0
 local YOffset = 0
 local enableAuraTable = {}
+local showNameplateNumber
+
 
 local function setAuraTime(time,order,duration)
     if time and time~=0 then
@@ -194,7 +196,10 @@ local function InitializeDB()
             customSpell = {
                 340880,
             },
-
+            resourceNumber = true,
+            resourceFont = "BIG_BOLD",
+            resourceFontSize = 12,
+            resourceAlignment = "CENTER"
         }
     }
     aceDB = LibStub("AceDB-3.0"):New("PersonalBuffAceDB", defaultSettings)
@@ -274,7 +279,7 @@ local function setNameplateBarTexture()
             if original == nil then
                 original = nameplate.UnitFrame.healthBar.barTexture:GetTexture()
             end
-            if nameplate.driverFrame.classNamePlatePowerBar then
+            if nameplate.driverFrame and nameplate.driverFrame.classNamePlatePowerBar then
                 nameplate.driverFrame.classNamePlatePowerBar.Texture:SetTexture(media.MediaTable.statusbar[barTexture])
             end
             nameplate.UnitFrame.healthBar.barTexture:SetTexture(media.MediaTable.statusbar[barTexture])
@@ -291,15 +296,46 @@ local function healthBarReset(nameplateToken)
     end
 end
 
+
+local function setNameplateNumber()
+    local nameplate = C_NamePlate.GetNamePlateForUnit("player", issecure())
+
+    if showNameplateNumber and nameplate then
+        local alpha = nameplate:GetAlpha()
+        healthFrame:SetAllPoints(nameplate.UnitFrame.healthBar)
+        healthFrame:SetAlpha(alpha)
+        healthFrame.update()
+
+
+        if nameplate.driverFrame and nameplate.driverFrame.classNamePlatePowerBar then
+            powerFrame:SetAllPoints(nameplate.driverFrame.classNamePlatePowerBar)
+            powerFrame:SetAlpha(alpha)
+            powerFrame.update()
+        end
+    end
+end
+
 local function OnUpdate()
     hideBlizzardAuras()
     setBuffFramePoint()
     updateAura()
+    setNameplateNumber()
 end
 
 local playerNameplateToken
 local function getPlayerNameplateToken()
     playerNameplateToken = C_NamePlate.GetNamePlateForUnit("player", issecure()).namePlateUnitToken
+end
+
+local function checkResourceNumber()
+    showNameplateNumber = aceDB.char.resourceNumber
+    if showNameplateNumber == true then
+        healthFrame:Show()
+        powerFrame:Show()
+    else
+        healthFrame:Hide()
+        powerFrame:Hide()
+    end
 end
 
 local function namePlateUpdate()
@@ -309,6 +345,7 @@ local function namePlateUpdate()
         getPlayerNameplateToken()
         loadEnableSpell()
         setNameplateBarTexture()
+        checkResourceNumber()
         updateTracker = true
         updateTicker = C_Timer.NewTicker(0.1,OnUpdate)
     end
@@ -342,6 +379,7 @@ local function createBuffIconsFrame()
         local coolDown = CreateFrame("CoolDown", nil, iconFrameTable[i], "CooldownFrameTemplate")
         coolDown:SetAllPoints(Texture)
         coolDown.noCooldownCount = true
+        coolDown:SetHideCountdownNumbers(true)
         iconFrameTable[i].coolDown = coolDown
 
         local timeText1 = iconFrameTable[i]:CreateFontString(nil, "OVERLAY")
@@ -421,6 +459,8 @@ local function EventHandler(self, event,...)
             updateTracker = false
             updateTicker:Cancel()
             playerNameplateToken = nil
+            healthFrame:Hide()
+            powerFrame:Hide()
         end
     elseif event == "NAME_PLATE_UNIT_ADDED" then
         healthBarReset(...)
@@ -462,3 +502,20 @@ function shallowcopy(orig)
     end
     return copy
 end
+
+--local function testCooldownFrame()
+--    local coolDown = CreateFrame("CoolDown", nil, nil, "CooldownFrameTemplate")
+--    --coolDown.noCooldownCount = true
+--    coolDown:SetHideCountdownNumbers(true)
+--    coolDown:SetCooldown(GetTime(), 10)
+--    --local children = { coolDown:GetChildren() }
+--    --for i, child in ipairs(children) do
+--    --    print(i,":", child)
+--    --end
+--    --for name,i in pairs(coolDown) do
+--    --    print(name,":",i)
+--    --end
+--    --print(coolDown.Text)
+--end
+--
+--testCooldownFrame()

@@ -17,3 +17,4 @@ src\enUS.lua
 src\spells.lua
 src\PersonalBuff.lua
 src\config.lua
+src\PersonalNumber.lua

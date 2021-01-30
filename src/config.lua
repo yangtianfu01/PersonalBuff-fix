@@ -210,6 +210,96 @@ local function getClassOption()
                         args ={
 
                         }
+                    },
+                    resourceNumber = {
+                        order = 2,
+                        name = L["Resource Number"],
+                        type = "group",
+                        args ={
+                            show = {
+                                order = 1,
+                                type = "toggle",
+                                name = L["Show"],
+
+                                get = function(info)
+                                    return aceDB.char.resourceNumber
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.resourceNumber = val
+                                end,
+                            },
+                            header =  {
+                                order = 2,
+                                type = "header",
+                                name = "",
+                            },
+                            font = {
+                                order = 3,
+                                type = "select",
+                                style = "dropdown",
+                                name = L["font"],
+                                values = media:List("font"),
+                                itemControl = "DDI-Font",
+                                get = function(info)
+                                    for i, v in next, media:List("font") do
+                                        if v == aceDB.char.resourceFont then return i end
+                                    end
+                                end,
+                                set = function(info,key)
+                                    local list = media:List("font")
+                                    local font = list[key]
+                                    aceDB.char.resourceFont = font
+                                    healthFrame.text:SetFont(media.MediaTable.font[font], aceDB.char.resourceFontSize, "OUTLINE")
+                                    powerFrame.text:SetFont(media.MediaTable.font[font], aceDB.char.resourceFontSize, "OUTLINE")
+                                end,
+                                disabled = function()
+                                    return not aceDB.char.resourceNumber
+                                end,
+                            },
+                            size = {
+                                order = 4,
+                                type = "range",
+                                name = L["fontSize"],
+                                min = 6,
+                                max = 14,
+                                step = 1,
+                                get = function(info)
+                                    return aceDB.char.resourceFontSize
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.resourceFontSize = val
+                                    healthFrame.text:SetFont(aceDB.char.resourceFont, val, "OUTLINE")
+                                    powerFrame.text:SetFont(aceDB.char.resourceFont, val, "OUTLINE")
+                                end,
+                                disabled = function()
+                                    return not aceDB.char.resourceNumber
+                                end,
+                            },
+                            --alignment = {
+                            --    order = 5,
+                            --    type = "select",
+                            --    style = "dropdown",
+                            --    name = L["alignment"],
+                            --    values = {
+                            --        LEFT = L["left"],
+                            --        CENTER = L["center"],
+                            --        RIGHT = L["right"],
+                            --    },
+                            --    get = function(info)
+                            --        return aceDB.char.resourceAlignment
+                            --    end,
+                            --    set = function(info, val)
+                            --        aceDB.char.resourceAlignment = val
+                            --        --healthFrame.text:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+                            --        --powerFrame.text:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+                            --        print(val)
+                            --    end,
+                            --    disabled = function()
+                            --        return not aceDB.char.resourceNumber
+                            --    end,
+                            --}
+
+                        }
                     }
                 }
 
@@ -346,7 +436,6 @@ local function getClassOption()
                                     end
                                 end ,
                             },
-
                         }
                     },
                 }
@@ -498,13 +587,90 @@ function insertSpellsSort()
     }
 end
 
+function setDefaultCustomSpell()
+    mainOption.args.BuffOption.args.customSpell.args = {
+        description = {
+            order = 0,
+            type = "description",
+            name = "Enter the spell 'ID'",
+            width = "full"
+        },
+        input = {
+            order = 1,
+            type = "input",
+            name = "",
+            width = "full",
+            set = function (info, v)
+                table.insert(aceDB.char.customSpell,tonumber(v))
+                addCustomSpell()
+                resetBuffIconsFrame()
+                resetSpellSort()
+            end,
+            validate = function(info, v)
+                local check = true
+                for i,k in ipairs(aceDB.char.customSpell) do
+                    if k == tonumber(v) then
+                        check = false
+                    end
+                end
+
+                if GetSpellInfo(v) == nil then
+                    return "please check spell id"
+                elseif check == false then
+                    return "spell is already existed"
+                else
+                    return true
+                end
+            end ,
+            confirm = function(info, v)
+                if GetSpellInfo(v) ~= nil then
+                    return format("|T%s:16|t %s", GetSpellTexture(v), GetSpellInfo(v))
+                end
+            end ,
+        },
+    }
+end
+
+function resetCustomSpell()
+    setDefaultCustomSpell()
+    addCustomSpell()
+    resetBuffIconsFrame()
+    resetSpellSort()
+end
+
 function addCustomSpell()
+    local index = 5
     for i,k in ipairs(aceDB.char.customSpell) do
-        mainOption.args.BuffOption.args.customSpell.args[tostring(i+2)] = {
+
+        mainOption.args.BuffOption.args.customSpell.args[tostring(i+index)] = {
+            order = i+index,
+            type = "execute",
+            name = "",
+            image = "Interface\\AddOns\\PersonalBuff\\texture\\remove.blp",
+            imageWidth = 20,
+            imageHeight = 20,
+            width = 0.1,
+            hidden = function()
+                if i ~= 1 then
+                    return false
+                else
+                    return true
+                end
+            end,
+            func = function()
+                table.remove(aceDB.char.customSpell,i)
+                resetCustomSpell()
+            end
+        }
+        index = index + 1
+
+
+        mainOption.args.BuffOption.args.customSpell.args[tostring(i+index)] = {
             type = "toggle",
-            order = i+2,
+            order = i+index,
             name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
             desc = GetSpellDescription(k),
+            width = 1.0,
             get = function(info)
                 return aceDB.char.enabledSpell[k]
             end,
@@ -512,6 +678,7 @@ function addCustomSpell()
                 aceDB.char.enabledSpell[k] = val
             end,
         }
+
     end
 end
 
