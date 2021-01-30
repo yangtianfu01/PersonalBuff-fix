@@ -196,9 +196,9 @@ local function InitializeDB()
             customSpell = {
                 340880,
             },
-            resourceNumber = true,
+            resourceNumber = false,
             resourceFont = "BIG_BOLD",
-            resourceFontSize = 12,
+            resourceFontSize = 8,
             resourceAlignment = "CENTER"
         }
     }
@@ -302,12 +302,21 @@ local function setNameplateNumber()
 
     if showNameplateNumber and nameplate then
         local alpha = nameplate:GetAlpha()
+        if healthFrame == nil then
+            InitializeHealthNumber(nameplate.UnitFrame.healthBar:GetSize())
+        end
+
         healthFrame:SetAllPoints(nameplate.UnitFrame.healthBar)
         healthFrame:SetAlpha(alpha)
         healthFrame.update()
 
 
         if nameplate.driverFrame and nameplate.driverFrame.classNamePlatePowerBar then
+
+            if powerFrame == nil then
+                InitializePowerNumber(nameplate.driverFrame.classNamePlatePowerBar:GetSize())
+            end
+
             powerFrame:SetAllPoints(nameplate.driverFrame.classNamePlatePowerBar)
             powerFrame:SetAlpha(alpha)
             powerFrame.update()
@@ -329,13 +338,6 @@ end
 
 local function checkResourceNumber()
     showNameplateNumber = aceDB.char.resourceNumber
-    if showNameplateNumber == true then
-        healthFrame:Show()
-        powerFrame:Show()
-    else
-        healthFrame:Hide()
-        powerFrame:Hide()
-    end
 end
 
 local function namePlateUpdate()
@@ -444,6 +446,13 @@ function setYOffset(offset)
     YOffset = offset
 end
 
+local function clearResourceNumberFrame()
+    healthFrame:Hide()
+    powerFrame:Hide()
+    healthFrame = nil
+    powerFrame = nil
+end
+
 local function EventHandler(self, event,...)
     if event == "PLAYER_ENTERING_WORLD" then
         InitializeDB()
@@ -459,8 +468,7 @@ local function EventHandler(self, event,...)
             updateTracker = false
             updateTicker:Cancel()
             playerNameplateToken = nil
-            healthFrame:Hide()
-            powerFrame:Hide()
+            clearResourceNumberFrame()
         end
     elseif event == "NAME_PLATE_UNIT_ADDED" then
         healthBarReset(...)
@@ -503,19 +511,3 @@ function shallowcopy(orig)
     return copy
 end
 
---local function testCooldownFrame()
---    local coolDown = CreateFrame("CoolDown", nil, nil, "CooldownFrameTemplate")
---    --coolDown.noCooldownCount = true
---    coolDown:SetHideCountdownNumbers(true)
---    coolDown:SetCooldown(GetTime(), 10)
---    --local children = { coolDown:GetChildren() }
---    --for i, child in ipairs(children) do
---    --    print(i,":", child)
---    --end
---    --for name,i in pairs(coolDown) do
---    --    print(name,":",i)
---    --end
---    --print(coolDown.Text)
---end
---
---testCooldownFrame()

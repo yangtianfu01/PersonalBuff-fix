@@ -5,77 +5,45 @@
 ---
 local media = LibStub("LibSharedMedia-3.0")
 
-local playerHealth = UnitHealth("player")
-local playerPower = UnitPower("player")
-
-healthFrame = CreateFrame("Frame",nil,UIParent)
-local healthTexture = healthFrame:CreateTexture(nil,"ARTWORK")
-healthTexture:SetTexture(0,0,0,0)
-
-local healthText = healthFrame:CreateFontString(nil, "OVERLAY")
-healthText:SetFont(media.MediaTable.font["BIG_BOLD"], 12, "OUTLINE")
-healthText:SetPoint("CENTER", 0, 0)
-healthFrame.text = healthText
-
-
-powerFrame = CreateFrame("Frame",nil,UIParent)
-local powerTexture = powerFrame:CreateTexture(nil,"ARTWORK")
-powerTexture:SetTexture(0,0,0,0)
-
-local powerText = powerFrame:CreateFontString(nil, "OVERLAY")
-powerText:SetFont(media.MediaTable.font["BIG_BOLD"], 12, "OUTLINE")
-powerText:SetPoint("CENTER", 0, 0)
-powerFrame.text = powerText
+healthFrame = nil
+powerFrame = nil
 
 local function updatePlayerHealth()
-    playerHealth = UnitHealth("player")
-    healthText:SetText(playerHealth)
-end
-
-local function setPlayerHealthFramePoint(...)
-
+    local playerHealth = UnitHealth("player")
+    healthFrame.text:SetText(playerHealth)
 end
 
 local function updatePlayerPower()
-    playerPower = UnitPower("player")
-    powerText:SetText(playerPower)
+    local playerPower = UnitPower("player")
+    powerFrame.text:SetText(playerPower)
 end
 
-local function setPlayerPowerFramePoint(...)
+function InitializeHealthNumber(width,height)
+    healthFrame = CreateFrame("Frame",nil,nil)
+    healthFrame:SetSize(width, height)
 
+    local healthTexture = healthFrame:CreateTexture(nil,"ARTWORK")
+    healthTexture:SetTexture(0,0,0,0)
+
+    local healthText = healthFrame:CreateFontString(nil, "OVERLAY")
+    healthText:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
+    healthText:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+    healthFrame.text = healthText
+
+    healthFrame.update = updatePlayerHealth
 end
 
-healthFrame.update = updatePlayerHealth
-powerFrame.update = updatePlayerPower
+function InitializePowerNumber(width,height)
+    powerFrame = CreateFrame("Frame",nil,nil)
+    powerFrame:SetSize(width, height)
 
---local function EventHandler(self, event, unit)
---    if event == "UNIT_HEALTH" and unit == "player" then
---        playerHealth = UnitHealth("player")
---        healthText:SetText(playerHealth)
---    elseif event == "UNIT_POWER_UPDATE" and unit == "player" then
---        playerPower = UnitPower("player")
---        powerText:SetText(playerPower)
---    end
---end
---
---local function registerEvent()
---    eventFrame = CreateFrame("Frame")
---    eventFrame:RegisterEvent("UNIT_HEALTH","player")
---    eventFrame:RegisterEvent("UNIT_POWER_UPDATE","player")
---    eventFrame:SetScript("OnEvent", EventHandler)
---end
---
---registerEvent()
+    local powerTexture = powerFrame:CreateTexture(nil,"ARTWORK")
+    powerTexture:SetTexture(0,0,0,0)
 
---local f = CreateFrame("Frame",nil,UIParent)
---f:SetFrameStrata("BACKGROUND")
---f:SetWidth(128) -- Set these to whatever height/width is needed
---f:SetHeight(64) -- for your Texture
---
---local t = f:CreateTexture(nil,"BACKGROUND")
---t:SetTexture(1,1,1)
---t:SetAllPoints(f)
---f.texture = t
---
---f:SetPoint("CENTER",0,0)
---f:Show()
+    local powerText = powerFrame:CreateFontString(nil, "OVERLAY")
+    powerText:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
+    powerText:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+    powerFrame.text = powerText
+
+    powerFrame.update = updatePlayerPower
+end

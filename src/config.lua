@@ -169,7 +169,7 @@ local function getClassOption()
                                 name = L["customTexture"],
                                 confirm = function(info, v)
                                     if not v then
-                                        return L["Disabling the texture will make them reset next time you relog, are you sure?"]
+                                        return L["Disabling the texture will make them reset next time you reload, are you sure?"]
                                     end
                                 end ,
                                 get = function(info)
@@ -249,8 +249,6 @@ local function getClassOption()
                                     local list = media:List("font")
                                     local font = list[key]
                                     aceDB.char.resourceFont = font
-                                    healthFrame.text:SetFont(media.MediaTable.font[font], aceDB.char.resourceFontSize, "OUTLINE")
-                                    powerFrame.text:SetFont(media.MediaTable.font[font], aceDB.char.resourceFontSize, "OUTLINE")
                                 end,
                                 disabled = function()
                                     return not aceDB.char.resourceNumber
@@ -268,36 +266,31 @@ local function getClassOption()
                                 end,
                                 set = function(info, val)
                                     aceDB.char.resourceFontSize = val
-                                    healthFrame.text:SetFont(aceDB.char.resourceFont, val, "OUTLINE")
-                                    powerFrame.text:SetFont(aceDB.char.resourceFont, val, "OUTLINE")
                                 end,
                                 disabled = function()
                                     return not aceDB.char.resourceNumber
                                 end,
                             },
-                            --alignment = {
-                            --    order = 5,
-                            --    type = "select",
-                            --    style = "dropdown",
-                            --    name = L["alignment"],
-                            --    values = {
-                            --        LEFT = L["left"],
-                            --        CENTER = L["center"],
-                            --        RIGHT = L["right"],
-                            --    },
-                            --    get = function(info)
-                            --        return aceDB.char.resourceAlignment
-                            --    end,
-                            --    set = function(info, val)
-                            --        aceDB.char.resourceAlignment = val
-                            --        --healthFrame.text:SetPoint(aceDB.char.resourceAlignment, 0, 0)
-                            --        --powerFrame.text:SetPoint(aceDB.char.resourceAlignment, 0, 0)
-                            --        print(val)
-                            --    end,
-                            --    disabled = function()
-                            --        return not aceDB.char.resourceNumber
-                            --    end,
-                            --}
+                            alignment = {
+                                order = 5,
+                                type = "select",
+                                style = "dropdown",
+                                name = L["alignment"],
+                                values = {
+                                    LEFT = L["left"],
+                                    CENTER = L["center"],
+                                    RIGHT = L["right"],
+                                },
+                                get = function(info)
+                                    return aceDB.char.resourceAlignment
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.resourceAlignment = val
+                                end,
+                                disabled = function()
+                                    return not aceDB.char.resourceNumber
+                                end,
+                            }
 
                         }
                     }
@@ -395,7 +388,7 @@ local function getClassOption()
                     customSpell = {
                         order = 13,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Trade_engineering", "Custom") end,
+                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Trade_engineering", L["custom"]) end,
                         args = {
                             description = {
                                 order = 0,
