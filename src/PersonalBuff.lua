@@ -447,10 +447,14 @@ function setYOffset(offset)
 end
 
 local function clearResourceNumberFrame()
-    healthFrame:Hide()
-    powerFrame:Hide()
-    healthFrame = nil
-    powerFrame = nil
+    if healthFrame ~= nil then
+        healthFrame:Hide()
+        healthFrame = nil
+    end
+    if powerFrame ~= nil then
+        powerFrame:Hide()
+        powerFrame = nil
+    end
 end
 
 local function EventHandler(self, event,...)
