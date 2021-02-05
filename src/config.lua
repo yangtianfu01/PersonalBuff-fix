@@ -307,74 +307,74 @@ local function getClassOption()
                     Warrior = {
                         order = 1,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_warrior", GetClassInfo(1)) end,
+                        name = function() return format("|cffC79C6E|T%s:16|t %s", "Interface\\ICONS\\Classicon_warrior", GetClassInfo(1)) end,
                         args = {}
                     },
                     Paladin= {
                         order = 2,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_paladin", GetClassInfo(2)) end,
+                        name = function() return format("|cffF58CBA|T%s:16|t %s", "Interface\\ICONS\\Classicon_paladin", GetClassInfo(2)) end,
                         args = {}
                     },
                     Hunter = {
                         order = 3,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_hunter", GetClassInfo(3)) end,
+                        name = function() return format("|cffABD473|T%s:16|t %s", "Interface\\ICONS\\Classicon_hunter", GetClassInfo(3)) end,
                         args = {
                         }
                     },
                     Rogue = {
                         order = 4,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_rogue", GetClassInfo(4)) end,
+                        name = function() return format("|cffFFF569|T%s:16|t %s", "Interface\\ICONS\\Classicon_rogue", GetClassInfo(4)) end,
                         args = {}
                     },
                     Priest = {
                         order = 5,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_priest", GetClassInfo(5)) end,
+                        name = function() return format("|cffFFFFFF|T%s:16|t %s", "Interface\\ICONS\\Classicon_priest", GetClassInfo(5)) end,
                         args = {}
                     },
                     DeathKnight = {
                         order = 6,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_deathknight", GetClassInfo(6)) end,
+                        name = function() return format("|cffC41F3B|T%s:16|t %s", "Interface\\ICONS\\Classicon_deathknight", GetClassInfo(6)) end,
                         args = {}
                     },
                     Shaman = {
                         order = 7,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_shaman", GetClassInfo(7)) end,
+                        name = function() return format("|cff0070DE|T%s:16|t %s", "Interface\\ICONS\\Classicon_shaman", GetClassInfo(7)) end,
                         args = {}
                     },
                     Mage = {
                         order = 8,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_mage", GetClassInfo(8)) end,
+                        name = function() return format("|cff69CCF0|T%s:16|t %s", "Interface\\ICONS\\Classicon_mage", GetClassInfo(8)) end,
                         args = {}
                     },
                     Warlock = {
                         order = 9,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_warlock", GetClassInfo(9)) end,
+                        name = function() return format("|cff9482C9|T%s:16|t %s", "Interface\\ICONS\\Classicon_warlock", GetClassInfo(9)) end,
                         args = {}
                     },
                     Monk = {
                         order = 10,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_monk", GetClassInfo(10)) end,
+                        name = function() return format("|cff00FF96|T%s:16|t %s", "Interface\\ICONS\\Classicon_monk", GetClassInfo(10)) end,
                         args = {}
                     },
                     Druid = {
                         order = 11,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_druid", GetClassInfo(11)) end,
+                        name = function() return format("|cffFF7D0A|T%s:16|t %s", "Interface\\ICONS\\Classicon_druid", GetClassInfo(11)) end,
                         args = {}
                     },
                     DemonHunter = {
                         order = 12,
                         type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Classicon_demonhunter", GetClassInfo(12)) end,
+                        name = function() return format("|cffA330C9|T%s:16|t %s", "Interface\\ICONS\\Classicon_demonhunter", GetClassInfo(12)) end,
                         args = {}
                     },
 

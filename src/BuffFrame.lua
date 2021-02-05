@@ -34,7 +34,7 @@ local function CreateIcon(IconSetting)
     local cooldown = CreateFrame("Cooldown", nil , frame, "CooldownFrameTemplate")
     cooldown:SetAllPoints()
     cooldown:SetSwipeColor(1, 1, 1, 0.8)
-    cooldown:SetHideCountdownNumbers(false)
+    cooldown:SetHideCountdownNumbers(true)
     cooldown:SetDrawEdge(false)
     cooldown:SetDrawSwipe(true)
     cooldown.noCooldownCount = true
@@ -133,8 +133,14 @@ function BuffFrame:SetIconSize()
 
     for _,i in pairs(BuffFrame.icons) do
         i:SetSize(BuffFrame.FrameSetting.IconSetting.iconSize,BuffFrame.FrameSetting.IconSetting.iconSize)
-        i.icon:SetSize(BuffFrame.FrameSetting.IconSetting.iconSize,BuffFrame.FrameSetting.IconSetting.iconSize)
-        i.cooldown:SetSize(BuffFrame.FrameSetting.IconSetting.iconSize,BuffFrame.FrameSetting.IconSetting.iconSize)
+        --i.icon:SetSize(BuffFrame.FrameSetting.IconSetting.iconSize,BuffFrame.FrameSetting.IconSetting.iconSize)
+        --i.cooldown:SetSize(BuffFrame.FrameSetting.IconSetting.iconSize,BuffFrame.FrameSetting.IconSetting.iconSize)
+        i.icon:SetAllPoints()
+        i.cooldown:SetAllPoints()
+    end
+
+    if BuffFrame.FrameSetting.IconSetting.group then
+        BuffFrame.FrameSetting.IconSetting.group:ReSkin(true)
     end
 end
 
