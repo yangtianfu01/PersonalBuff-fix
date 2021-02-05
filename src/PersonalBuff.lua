@@ -14,42 +14,8 @@ local XOffset = 0
 local YOffset = 0
 local enableAuraTable = {}
 local showNameplateNumber
+local buffFrame
 
-
-local function setAuraTime(time,order,duration)
-    if time and time~=0 then
-        local AuraTime = time - GetTime()
-        if duration == 0 then
-            if(AuraTime > 60) then
-                iconFrameTable[order].timeText1:SetText(math.floor(AuraTime / 60) .. "m")
-            elseif (AuraTime > 3) then
-                iconFrameTable[order].timeText1:SetText(string.format("%.0f", AuraTime))
-            elseif (AuraTime > 0) then
-                iconFrameTable[order].timeText1:SetText(string.format("%.1f", AuraTime))
-            end
-        else
-            if(AuraTime > 60) then
-                iconFrameTable[order].timeText2:SetText(math.floor(AuraTime / 60) .. "m")
-            elseif (AuraTime > 3) then
-                iconFrameTable[order].timeText2:SetText(string.format("%.0f", AuraTime))
-            elseif (AuraTime > 0) then
-                iconFrameTable[order].timeText2:SetText(string.format("%.1f", AuraTime))
-            end
-        end
-
-    else
-
-    end
-end
-local function setStackCount(count,sepllID,duration)
-    if count ~=0 then
-        if duration == 0 and count ~=1 then
-            iconFrameTable[sepllID].countText1:SetText(count)
-        else
-            iconFrameTable[sepllID].countText2:SetText(count)
-        end
-    end
-end
 
 local function iconEnable(spellID)
     for _,i in ipairs(enabledSpell) do
@@ -60,32 +26,6 @@ local function iconEnable(spellID)
     return false
 end
 
-
-local function setAuraIcon(spellID,time,parent,order,duration,count,alpha)
-    if iconEnable(spellID) then
-        iconFrameTable[spellID]:Show()
-        iconFrameTable[spellID]:SetAlpha(alpha)
-        iconFrameTable[spellID]:SetPoint("BOTTOMLEFT", order * iconSize + (order - 1) * iconSpacing ,0)
-        iconFrameTable[spellID].coolDown:SetCooldown(time - duration,duration)
-        setAuraTime(time,spellID,duration)
-        setStackCount(count,spellID,duration)
-        return true
-    else
-        return false
-    end
-end
-
-local function freeIconFrame()
-
-    for _,i in ipairs(enabledSpell) do
-        iconFrameTable[i]:Hide()
-        iconFrameTable[i].coolDown:Clear()
-        iconFrameTable[i].timeText1:SetText(nil)
-        iconFrameTable[i].countText1:SetText("")
-        iconFrameTable[i].timeText2:SetText(nil)
-        iconFrameTable[i].countText2:SetText("")
-    end
-end
 
 function RankCompare(a,b)
     return a.Rank > b.Rank
@@ -104,13 +44,14 @@ local function getEnableAuraTable(aura)
 end
 
 local function updateAura()
-    local alpha = 1
+    enableAuraTable = {}
+    enableAuraTable.alpha = 1
+
     if C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil then
-        alpha = C_NamePlate.GetNamePlateForUnit("player", issecure()):GetAlpha()
+        enableAuraTable.alpha = C_NamePlate.GetNamePlateForUnit("player", issecure()):GetAlpha()
     end
 
-    enableAuraTable = {}
-    freeIconFrame()
+    buffFrame:clear()
 
     for i=1,40 do
         local Buff = {UnitBuff("player",i)}
@@ -128,10 +69,7 @@ local function updateAura()
     end
     table.sort(enableAuraTable,RankCompare)
 
-    for i,k in ipairs(enableAuraTable) do
-        setAuraIcon(k[10],k[6], BuffIcons,i,k[5],k[3],alpha)
-    end
-
+    buffFrame:display(enableAuraTable)
 end
 
 local function InitializeDB()
@@ -214,7 +152,7 @@ end
 
 local function setBuffFramePoint()
     if C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil then
-        BuffIcons:SetPoint("LEFT",C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.BuffFrame,"LEFT",-(iconSize) + XOffset,((iconSize-20)/3)+2 + YOffset)
+        buffFrame:SetFramePoint(C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.BuffFrame)
     end
 end
 
@@ -353,97 +291,52 @@ local function namePlateUpdate()
     end
 end
 
+local function initialBuffFrame()
+    local IconSetting = {}
+    IconSetting.iconSize = aceDB.char.iconSize
+    IconSetting.iconSpacing =aceDB.char.iconSpacing
+    IconSetting.countFont = media.MediaTable.font[aceDB.char.countFont]
+    IconSetting.countFontSize = aceDB.char.countFontSize
+    IconSetting.font = media.MediaTable.font[aceDB.char.font]
+    IconSetting.fontSize = aceDB.char.fontSize
+    IconSetting.XOffset = aceDB.char.XOffset
+    IconSetting.YOffset = aceDB.char.YOffset
+    local FrameSetting = {}
+    FrameSetting.Width = aceDB.char.iconSize * 10
+    FrameSetting.Height = aceDB.char.iconSize
+    FrameSetting.Spells = playerInfo.classSpells
+    FrameSetting.IconSetting = IconSetting
 
-
-local function createBuffIconsFrame()
-    iconSize = aceDB.char.iconSize
-    iconSpacing = aceDB.char.iconSpacing
-    local font = aceDB.char.font
-    local fontSize = aceDB.char.fontSize
-    local countFont = aceDB.char.font
-    local countFontSize = aceDB.char.countFontSize
-    BuffIcons = CreateFrame("Frame",nil,nil)
-    BuffIcons:SetSize(iconSize*10,iconSize)
-
-    for _,i in ipairs(playerInfo.classSpells) do
-        iconFrameTable[i] = CreateFrame("Frame",nil,BuffIcons)
-        iconFrameTable[i]:SetSize(iconSize,iconSize)
-
-        iconFrameTable[i].spellID = i
-
-
-        local Texture = iconFrameTable[i]:CreateTexture(nil,"ARTWORK")
-        Texture:SetPoint("CENTER")
-        Texture:SetSize(iconSize,iconSize)
-        Texture:SetTexture(GetSpellTexture(i))
-        iconFrameTable[i].texture = Texture
-
-        local coolDown = CreateFrame("CoolDown", nil, iconFrameTable[i], "CooldownFrameTemplate")
-        coolDown:SetAllPoints(Texture)
-        coolDown.noCooldownCount = true
-        coolDown:SetHideCountdownNumbers(true)
-        iconFrameTable[i].coolDown = coolDown
-
-        local timeText1 = iconFrameTable[i]:CreateFontString(nil, "OVERLAY")
-        timeText1:SetFont(media.MediaTable.font[font], fontSize, "OUTLINE")
-        timeText1:SetPoint("CENTER", 0, 0)
-        iconFrameTable[i].timeText1 = timeText1
-
-        local countText1 = iconFrameTable[i]:CreateFontString(nil, "OVERLAY")
-        countText1:SetFont(media.MediaTable.font[countFont], countFontSize, "OUTLINE")
-        countText1:SetPoint("BOTTOMRIGHT", 0, 0)
-        iconFrameTable[i].countText1 = countText1
-
-        local timeText2 = coolDown:CreateFontString(nil, "OVERLAY")
-        timeText2:SetFont(media.MediaTable.font[font], fontSize, "OUTLINE")
-        timeText2:SetPoint("CENTER", 0, 0)
-        iconFrameTable[i].timeText2 = timeText2
-
-        local countText2 = coolDown:CreateFontString(nil, "OVERLAY")
-        countText2:SetFont(media.MediaTable.font[countFont], countFontSize, "OUTLINE")
-        countText2:SetPoint("BOTTOMRIGHT", 0, 0)
-        iconFrameTable[i].countText2 = countText2
-    end
+    return CreateBuffFrame(FrameSetting)
 end
 
 function adjustmentFont()
-    local size = aceDB.char.fontSize
-    local font = aceDB.char.font
-    for _,i in pairs(iconFrameTable) do
-        iconFrameTable[i.spellID].timeText1:SetFont(media.MediaTable.font[font], size, "OUTLINE")
-        iconFrameTable[i.spellID].timeText2:SetFont(media.MediaTable.font[font], size, "OUTLINE")
-    end
+    buffFrame.FrameSetting.IconSetting.font = media.MediaTable.font[aceDB.char.font]
+    buffFrame.FrameSetting.IconSetting.fontSize = aceDB.char.fontSize
+    buffFrame:SetFont()
 end
 
 function adjustmentCountFont()
-    local size = aceDB.char.countFontSize
-    local font = aceDB.char.countFont
-    for _,i in pairs(iconFrameTable) do
-        iconFrameTable[i.spellID].countText1:SetFont(media.MediaTable.font[font], size, "OUTLINE")
-        iconFrameTable[i.spellID].countText2:SetFont(media.MediaTable.font[font], size, "OUTLINE")
-    end
+    buffFrame.FrameSetting.IconSetting.countFont = media.MediaTable.font[aceDB.char.countFont]
+    buffFrame.FrameSetting.IconSetting.countFontSize = aceDB.char.countFontSize
+    buffFrame:SetCountFont()
 end
 
 function adjustmentIconSize()
-    iconSize = aceDB.char.iconSize
-    BuffIcons:SetSize(iconSize*10,iconSize)
-
-    for _,i in pairs(iconFrameTable) do
-        iconFrameTable[i.spellID]:SetSize(iconSize,iconSize)
-        iconFrameTable[i.spellID].texture:SetSize(iconSize,iconSize)
-    end
+    buffFrame.FrameSetting.IconSetting.iconSize = aceDB.char.iconSize
+    buffFrame:SetIconSize()
 end
 
 function adjustmentIconSpacing()
-    iconSpacing = aceDB.char.iconSpacing
+    buffFrame.FrameSetting.IconSetting.iconSpacing = aceDB.char.iconSpacing
 end
 
-function setXOffset(offset)
-    XOffset = offset
+function setXOffset()
+    buffFrame.FrameSetting.IconSetting.XOffset = aceDB.char.XOffset
 end
 
-function setYOffset(offset)
-    YOffset = offset
+function setYOffset()
+    buffFrame.FrameSetting.IconSetting.YOffset = aceDB.char.YOffset
 end
 
 local function clearResourceNumberFrame()
@@ -462,13 +355,13 @@ local function EventHandler(self, event,...)
         InitializeDB()
         getPlayerInfo()
         loadEnableSpell()
-        createBuffIconsFrame()
+        buffFrame = initialBuffFrame()
         addCustomSpell()
         insertSpellsSort()
 
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
         if  playerNameplateToken == ... then
-            freeIconFrame()
+            buffFrame:clear()
             updateTracker = false
             updateTicker:Cancel()
             playerNameplateToken = nil
@@ -491,15 +384,14 @@ local function registerAuraEvent()
     eventFrame:SetScript("OnEvent", EventHandler)
 end
 
-function resetBuffIconsFrame()
-    iconFrameTable = nil
-    iconFrameTable = {}
-    getPlayerInfo()
-    createBuffIconsFrame()
-end
+--function resetBuffIconsFrame()
+--    iconFrameTable = nil
+--    iconFrameTable = {}
+--    getPlayerInfo()
+--    createBuffIconsFrame()
+--end
 
-registerAuraEvent()
-updateTracker = false
+
 
 function shallowcopy(orig)
     local orig_type = type(orig)
@@ -515,3 +407,6 @@ function shallowcopy(orig)
     return copy
 end
 
+
+registerAuraEvent()
+updateTracker = false

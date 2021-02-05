@@ -14,6 +14,8 @@ src\Locales.xml
 src\zhTW.lua
 src\enUS.lua
 
+
+src\BuffFrame.lua
 src\spells.lua
 src\PersonalBuff.lua
 src\config.lua

@@ -58,7 +58,7 @@ local function getClassOption()
                                 type = "range",
                                 name = L["iconSize"],
                                 min = 12,
-                                max = 30,
+                                max = 45,
                                 step = 1,
                                 get = function(info)
                                     return aceDB.char.iconSize
@@ -88,8 +88,8 @@ local function getClassOption()
                                 order = 4,
                                 type = "range",
                                 name = L["iconSpacing"],
-                                min = 0,
-                                max = 6,
+                                min = -10,
+                                max = 10,
                                 step = 1,
                                 get = function(info)
                                     return aceDB.char.iconSpacing
@@ -103,30 +103,30 @@ local function getClassOption()
                                 order = 5,
                                 type = "range",
                                 name = L["X offset"],
-                                min = -20,
-                                max = 20,
+                                min = -50,
+                                max = 50,
                                 step = 1,
                                 get = function(info)
                                     return aceDB.char.XOffset
                                 end,
                                 set = function(info, val)
                                     aceDB.char.XOffset = val
-                                    setXOffset(val)
+                                    setXOffset()
                                 end,
                             },
                             YOffset = {
                                 order = 5,
                                 type = "range",
                                 name = L["Y offset"],
-                                min = -20,
-                                max = 20,
+                                min = -50,
+                                max = 50,
                                 step = 1,
                                 get = function(info)
                                     return aceDB.char.YOffset
                                 end,
                                 set = function(info, val)
                                     aceDB.char.YOffset = val
-                                    setYOffset(val)
+                                    setYOffset()
                                 end,
                             },
                             countFont = {
