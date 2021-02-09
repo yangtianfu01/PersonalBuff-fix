@@ -33,6 +33,11 @@ local function getClassOption()
                         name = L["icons"],
                         type = "group",
                         args ={
+                            iconHeader =  {
+                                order = 0,
+                                type = "header",
+                                name = L["icon"],
+                            },
                             font = {
                                 order = 1,
                                 type = "select",
@@ -163,8 +168,13 @@ local function getClassOption()
                                     adjustmentCountFont()
                                 end,
                             },
-                            customTexture = {
+                            healthBarHeader =  {
                                 order = 8,
+                                type = "header",
+                                name = L["health bar"],
+                            },
+                            customTexture = {
+                                order = 9,
                                 type = "toggle",
                                 name = L["customTexture"],
                                 confirm = function(info, v)
@@ -180,7 +190,7 @@ local function getClassOption()
                                 end,
                             },
                             barTexture = {
-                                order = 9,
+                                order = 10,
                                 type = "select",
                                 style = "dropdown",
                                 name = L["personalBarTexture"],
@@ -198,6 +208,23 @@ local function getClassOption()
                                     local list = media:List("statusbar")
                                     local texture = list[key]
                                     aceDB.char.barTexture = texture
+                                end,
+                            },
+
+                            changeHealthBarColor = {
+                                order = 11,
+                                type = "toggle",
+                                name = L["change health bar Color by class color"],
+                                confirm = function(info, v)
+                                    if not v then
+                                        return L["Reset the health bar color next time you reload"]
+                                    end
+                                end ,
+                                get = function(info)
+                                    return aceDB.char.changeHealthBarColor
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.changeHealthBarColor = val
                                 end,
                             },
                         },
@@ -404,7 +431,7 @@ local function getClassOption()
                                 set = function (info, v)
                                     table.insert(aceDB.char.customSpell,tonumber(v))
                                     addCustomSpell()
-                                    resetBuffIconsFrame()
+                                    --resetBuffFrame()
                                     resetSpellSort()
                                 end,
                                 validate = function(info, v)
@@ -596,7 +623,7 @@ function setDefaultCustomSpell()
             set = function (info, v)
                 table.insert(aceDB.char.customSpell,tonumber(v))
                 addCustomSpell()
-                resetBuffIconsFrame()
+                resetBuffFrame()
                 resetSpellSort()
             end,
             validate = function(info, v)
@@ -627,7 +654,7 @@ end
 function resetCustomSpell()
     setDefaultCustomSpell()
     addCustomSpell()
-    resetBuffIconsFrame()
+    resetBuffFrame()
     resetSpellSort()
 end
 

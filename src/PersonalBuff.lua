@@ -3,7 +3,7 @@
 --- Created by kira1101.
 --- DateTime: 2020/9/10 下午 12:46
 ---
-local iconFrameTable = {}
+
 local BuffIcons,eventFrame
 local enabledSpell
 local updateTicker,updateTracker
@@ -137,7 +137,8 @@ local function InitializeDB()
             resourceNumber = false,
             resourceFont = "BIG_BOLD",
             resourceFontSize = 8,
-            resourceAlignment = "CENTER"
+            resourceAlignment = "CENTER",
+            changeHealthBarColor = false,
         }
     }
     aceDB = LibStub("AceDB-3.0"):New("PersonalBuffAceDB", defaultSettings)
@@ -225,6 +226,16 @@ local function setNameplateBarTexture()
     end
 end
 
+local function setHealthBarClassColor()
+    local nameplate = C_NamePlate.GetNamePlateForUnit("player", issecure())
+    local changeHealthBarColor = aceDB.char.changeHealthBarColor
+    if changeHealthBarColor~=false and nameplate then
+        local _,classFilename = UnitClass("player")
+        local r,g,b,a = GetClassColor(classFilename)
+        nameplate.UnitFrame.healthBar:SetStatusBarColor(r,g,b,a)
+    end
+end
+
 local function healthBarReset(nameplateToken)
     local playerNameplate = C_NamePlate.GetNamePlateForUnit("player", issecure())
     if playerNameplate ~=nil and playerNameplate.namePlateUnitToken == nameplateToken then
@@ -285,6 +296,7 @@ local function namePlateUpdate()
         getPlayerNameplateToken()
         loadEnableSpell()
         setNameplateBarTexture()
+        setHealthBarClassColor()
         checkResourceNumber()
         updateTracker = true
         updateTicker = C_Timer.NewTicker(0.1,OnUpdate)
@@ -384,12 +396,12 @@ local function registerAuraEvent()
     eventFrame:SetScript("OnEvent", EventHandler)
 end
 
---function resetBuffIconsFrame()
---    iconFrameTable = nil
---    iconFrameTable = {}
---    getPlayerInfo()
---    createBuffIconsFrame()
---end
+function resetBuffFrame()
+    buffFrame:clear()
+    buffFrame = nil
+    getPlayerInfo()
+    buffFrame = initialBuffFrame()
+end
 
 
 
