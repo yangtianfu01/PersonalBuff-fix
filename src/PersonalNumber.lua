@@ -7,15 +7,76 @@ local media = LibStub("LibSharedMedia-3.0")
 
 healthFrame = nil
 powerFrame = nil
+resourceNumberType = nil
 
-local function updatePlayerHealth()
+local function setHealthPercent()
     local playerHealth = UnitHealth("player")
-    healthFrame.text:SetText(playerHealth)
+    local playerHealthMax = UnitHealthMax("player")
+    local HealthStr = string.format("%.0f%%",playerHealth/playerHealthMax * 100)
+    healthFrame.percent:SetText(HealthStr)
+end
+local function setHealthNumerical()
+    local playerHealth = UnitHealth("player")
+    healthFrame.numerical:SetText(playerHealth)
+end
+local function setHealthBoth()
+    setHealthNumerical()
+    setHealthPercent()
+end
+local function updatePlayerHealth()
+    if resourceNumberType == "Numerical" then
+        setHealthNumerical()
+    elseif resourceNumberType == "Percent" then
+        setHealthPercent()
+    elseif resourceNumberType == "Both" then
+        setHealthBoth()
+    else
+        setHealthNumerical()
+    end
+
+end
+
+local function setPowerPercent()
+    local playerPower = UnitPower("player")
+    local playerPowerMax = UnitPowerMax("player")
+    local powerStr = string.format("%.0f%%",playerPower/playerPowerMax * 100)
+    powerFrame.percent:SetText(powerStr)
+end
+local function setPowerNumerical()
+    local playerPower = UnitPower("player")
+    powerFrame.numerical:SetText(playerPower)
+end
+
+local function setPowerBoth()
+    setPowerPercent()
+    setPowerNumerical()
 end
 
 local function updatePlayerPower()
-    local playerPower = UnitPower("player")
-    powerFrame.text:SetText(playerPower)
+    if resourceNumberType == "Numerical" then
+        setPowerNumerical()
+    elseif resourceNumberType == "Percent" then
+        setPowerPercent()
+    elseif resourceNumberType == "Both" then
+        setPowerBoth()
+    else
+        setPowerNumerical()
+    end
+end
+
+
+local function CreateHealthNumerical()
+    local healthNumerical = healthFrame:CreateFontString(nil, "OVERLAY")
+    healthNumerical:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
+    healthNumerical:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+    healthFrame.numerical = healthNumerical
+end
+
+local function CreateHealthPercent()
+    local healthPercent = healthFrame:CreateFontString(nil, "OVERLAY")
+    healthPercent:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
+    healthPercent:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+    healthFrame.percent = healthPercent
 end
 
 function InitializeHealthNumber(width,height)
@@ -25,12 +86,35 @@ function InitializeHealthNumber(width,height)
     local healthTexture = healthFrame:CreateTexture(nil,"ARTWORK")
     healthTexture:SetTexture(0,0,0,0)
 
-    local healthText = healthFrame:CreateFontString(nil, "OVERLAY")
-    healthText:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
-    healthText:SetPoint(aceDB.char.resourceAlignment, 0, 0)
-    healthFrame.text = healthText
+    resourceNumberType = aceDB.char.resourceNumberType
+
+    if resourceNumberType == "Numerical" then
+        CreateHealthNumerical()
+    elseif resourceNumberType == "Percent" then
+        CreateHealthPercent()
+    elseif resourceNumberType == "Both" then
+        CreateHealthNumerical()
+        CreateHealthPercent()
+        healthFrame.percent:SetPoint("left", 0, 0)
+        healthFrame.numerical:SetPoint("right", 0, 0)
+    end
 
     healthFrame.update = updatePlayerHealth
+end
+
+
+local function CreatePowerNumerical()
+    local powerNumerical = powerFrame:CreateFontString(nil, "OVERLAY")
+    powerNumerical:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
+    powerNumerical:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+    powerFrame.numerical = powerNumerical
+end
+
+local function CreatePowerPercent()
+    local powerPercent = powerFrame:CreateFontString(nil, "OVERLAY")
+    powerPercent:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
+    powerPercent:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+    powerFrame.percent = powerPercent
 end
 
 function InitializePowerNumber(width,height)
@@ -40,10 +124,17 @@ function InitializePowerNumber(width,height)
     local powerTexture = powerFrame:CreateTexture(nil,"ARTWORK")
     powerTexture:SetTexture(0,0,0,0)
 
-    local powerText = powerFrame:CreateFontString(nil, "OVERLAY")
-    powerText:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
-    powerText:SetPoint(aceDB.char.resourceAlignment, 0, 0)
-    powerFrame.text = powerText
+    resourceNumberType = aceDB.char.resourceNumberType
 
+    if resourceNumberType == "Numerical" then
+        CreatePowerNumerical()
+    elseif resourceNumberType == "Percent" then
+        CreatePowerPercent()
+    elseif resourceNumberType == "Both" then
+        CreatePowerNumerical()
+        CreatePowerPercent()
+        powerFrame.percent:SetPoint("left", 0, 0)
+        powerFrame.numerical:SetPoint("right", 0, 0)
+    end
     powerFrame.update = updatePlayerPower
 end

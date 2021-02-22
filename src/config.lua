@@ -317,7 +317,27 @@ local function getClassOption()
                                 disabled = function()
                                     return not aceDB.char.resourceNumber
                                 end,
-                            }
+                            },
+                            type = {
+                                order = 6,
+                                type = "select",
+                                style = "dropdown",
+                                name = L["Type"],
+                                values = {
+                                    Numerical = L["Numerical"],
+                                    Percent = L["Percent"],
+                                    Both = L["Both"],
+                                },
+                                get = function(info)
+                                    return aceDB.char.resourceNumberType
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.resourceNumberType = val
+                                end,
+                                disabled = function()
+                                    return not aceDB.char.resourceNumber
+                                end,
+                            },
 
                         }
                     }

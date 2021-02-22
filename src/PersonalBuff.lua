@@ -135,6 +135,7 @@ local function InitializeDB()
                 340880,
             },
             resourceNumber = false,
+            resourceNumberType = "Numerical",
             resourceFont = "BIG_BOLD",
             resourceFontSize = 8,
             resourceAlignment = "CENTER",
