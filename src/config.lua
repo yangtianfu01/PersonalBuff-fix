@@ -11,10 +11,6 @@ local media = LibStub("LibSharedMedia-3.0")
 
 local mainOption,options
 
-local function resetSpellSort()
-    mainOption.args.iconOption.args.sort.args = {}
-    insertSpellsSort()
-end
 
 local function getClassOption()
     mainOption = {
@@ -230,14 +226,6 @@ local function getClassOption()
                         },
 
                     },
-                    sort = {
-                        order = 1,
-                        name = L["Sort"],
-                        type = "group",
-                        args ={
-
-                        }
-                    },
                     resourceNumber = {
                         order = 2,
                         name = L["Resource Number"],
@@ -351,133 +339,7 @@ local function getClassOption()
                 name = L["Buffs"],
 
                 args = {
-                    Warrior = {
-                        order = 1,
-                        type = "group",
-                        name = function() return format("|cffC79C6E|T%s:16|t %s", "Interface\\ICONS\\Classicon_warrior", GetClassInfo(1)) end,
-                        args = {}
-                    },
-                    Paladin= {
-                        order = 2,
-                        type = "group",
-                        name = function() return format("|cffF58CBA|T%s:16|t %s", "Interface\\ICONS\\Classicon_paladin", GetClassInfo(2)) end,
-                        args = {}
-                    },
-                    Hunter = {
-                        order = 3,
-                        type = "group",
-                        name = function() return format("|cffABD473|T%s:16|t %s", "Interface\\ICONS\\Classicon_hunter", GetClassInfo(3)) end,
-                        args = {
-                        }
-                    },
-                    Rogue = {
-                        order = 4,
-                        type = "group",
-                        name = function() return format("|cffFFF569|T%s:16|t %s", "Interface\\ICONS\\Classicon_rogue", GetClassInfo(4)) end,
-                        args = {}
-                    },
-                    Priest = {
-                        order = 5,
-                        type = "group",
-                        name = function() return format("|cffFFFFFF|T%s:16|t %s", "Interface\\ICONS\\Classicon_priest", GetClassInfo(5)) end,
-                        args = {}
-                    },
-                    DeathKnight = {
-                        order = 6,
-                        type = "group",
-                        name = function() return format("|cffC41F3B|T%s:16|t %s", "Interface\\ICONS\\Classicon_deathknight", GetClassInfo(6)) end,
-                        args = {}
-                    },
-                    Shaman = {
-                        order = 7,
-                        type = "group",
-                        name = function() return format("|cff0070DE|T%s:16|t %s", "Interface\\ICONS\\Classicon_shaman", GetClassInfo(7)) end,
-                        args = {}
-                    },
-                    Mage = {
-                        order = 8,
-                        type = "group",
-                        name = function() return format("|cff69CCF0|T%s:16|t %s", "Interface\\ICONS\\Classicon_mage", GetClassInfo(8)) end,
-                        args = {}
-                    },
-                    Warlock = {
-                        order = 9,
-                        type = "group",
-                        name = function() return format("|cff9482C9|T%s:16|t %s", "Interface\\ICONS\\Classicon_warlock", GetClassInfo(9)) end,
-                        args = {}
-                    },
-                    Monk = {
-                        order = 10,
-                        type = "group",
-                        name = function() return format("|cff00FF96|T%s:16|t %s", "Interface\\ICONS\\Classicon_monk", GetClassInfo(10)) end,
-                        args = {}
-                    },
-                    Druid = {
-                        order = 11,
-                        type = "group",
-                        name = function() return format("|cffFF7D0A|T%s:16|t %s", "Interface\\ICONS\\Classicon_druid", GetClassInfo(11)) end,
-                        args = {}
-                    },
-                    DemonHunter = {
-                        order = 12,
-                        type = "group",
-                        name = function() return format("|cffA330C9|T%s:16|t %s", "Interface\\ICONS\\Classicon_demonhunter", GetClassInfo(12)) end,
-                        args = {}
-                    },
 
-                    Bloodlust = {
-                        order = 13,
-                        type = "group",
-                        name = function() return format("|T%s:16|t %s", GetSpellTexture(2825), GetSpellInfo(2825)) end,
-                        args = {}
-                    },
-
-                    customSpell = {
-                        order = 13,
-                        type = "group",
-                        name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Trade_engineering", L["custom"]) end,
-                        args = {
-                            description = {
-                                order = 0,
-                                type = "description",
-                                name = "Enter the spell 'ID'",
-                                width = "full"
-                            },
-                            input = {
-                                order = 1,
-                                type = "input",
-                                name = "",
-                                width = "full",
-                                set = function (info, v)
-                                    table.insert(aceDB.char.customSpell,tonumber(v))
-                                    addCustomSpell()
-                                    --resetBuffFrame()
-                                    resetSpellSort()
-                                end,
-                                validate = function(info, v)
-                                    local check = true
-                                    for i,k in ipairs(aceDB.char.customSpell) do
-                                        if k == tonumber(v) then
-                                            check = false
-                                        end
-                                    end
-
-                                    if GetSpellInfo(v) == nil then
-                                        return "please check spell id"
-                                    elseif check == false then
-                                        return "spell is already existed"
-                                    else
-                                        return true
-                                    end
-                                end ,
-                                confirm = function(info, v)
-                                    if GetSpellInfo(v) ~= nil then
-                                        return format("|T%s:16|t %s", GetSpellTexture(v), GetSpellInfo(v))
-                                    end
-                                end ,
-                            },
-                        }
-                    },
                 }
             },
             --DebuffOption = {
@@ -521,9 +383,9 @@ end
 
 local function insertClassSpells(classname,spellTable)
     for i,k in ipairs(spellTable) do
-        mainOption.args.BuffOption.args[classname].args[tostring(i)] = {
+        mainOption.args.BuffOption.args[classname].args[tostring(((i + 1) * 2 ) - 1)] = {
             type = "toggle",
-            order = i,
+            order = ((i + 1) * 2 ) - 1,
             name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
             desc = GetSpellDescription(k),
             get = function(info)
@@ -531,6 +393,21 @@ local function insertClassSpells(classname,spellTable)
             end,
             set = function(info, val)
                 aceDB.char.enabledSpell[k] = val
+            end,
+        }
+        mainOption.args.BuffOption.args[classname].args[tostring(((i + 1) * 2 ))] = {
+            order = ((i + 1) * 2 ),
+            type = "range",
+            name = L["Priority"] ,
+            desc = L["The higher the rank ordering more left"],
+            max = 15,
+            min = -15,
+            step = 1,
+            get = function(info)
+                return aceDB.char.spellRank[k]
+            end,
+            set = function(info, val)
+                aceDB.char.spellRank[k] = val
             end,
         }
 
@@ -602,6 +479,24 @@ function insertSpellsSort()
         }
         index = index + 1
     end
+    for i,k in ipairs(CommonSpells) do
+        mainOption.args.iconOption.args.sort.args[tostring(index)] = {
+            order = index,
+            type = "range",
+            name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
+            desc = L["The higher the rank ordering more left"],
+            max = 15,
+            min = -15,
+            step = 1,
+            get = function(info)
+                return aceDB.char.spellRank[k]
+            end,
+            set = function(info, val)
+                aceDB.char.spellRank[k] = val
+            end,
+        }
+        index = index + 1
+    end
     mainOption.args.iconOption.args.sort.args[tostring(index)] = {
         order = -1,
         type = "range",
@@ -644,7 +539,6 @@ function setDefaultCustomSpell()
                 table.insert(aceDB.char.customSpell,tonumber(v))
                 addCustomSpell()
                 resetBuffFrame()
-                resetSpellSort()
             end,
             validate = function(info, v)
                 local check = true
@@ -675,7 +569,6 @@ function resetCustomSpell()
     setDefaultCustomSpell()
     addCustomSpell()
     resetBuffFrame()
-    resetSpellSort()
 end
 
 function addCustomSpell()
@@ -726,22 +619,79 @@ function setDBoptions()
     mainOption.args.iconOption.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(aceDB)
 end
 
+function insertClassConfig()
+    local _,_,ID = UnitClass("player")
+
+    if ID == 1 then
+        insertWarriorConfig(mainOption)
+        insertClassSpells("Warrior", WarriorSpells )
+    elseif ID == 2 then
+        insertPaladinConfig(mainOption)
+        insertClassSpells("Paladin", PaladinSpells )
+    elseif ID == 3 then
+        insertHunterConfig(mainOption)
+        insertClassSpells("Hunter",HunterSpells)
+        insertClassSpells("BeastMastery",BeastMasterySpells)
+        insertClassSpells("Marksmanship",MarksmanshipSpells)
+        insertClassSpells("Survival",SurvivalSpells)
+        insertClassSpells("PVP",HunterPVPSpells)
+        insertClassSpells("Legendary",HunterLegendary)
+    elseif ID == 4 then
+        insertRogueConfig(mainOption)
+        insertClassSpells("Rogue", RogueSpells)
+    elseif ID == 5 then
+        insertPriestConfig(mainOption)
+        insertClassSpells("Priest", PriestSpells)
+        insertClassSpells("Discipline",DisciplineSpells)
+        insertClassSpells("Holy",HolySpells)
+        insertClassSpells("Shadow",ShadowSpells)
+        insertClassSpells("PVP",PriestPVPSpells)
+        insertClassSpells("Legendary",PriestLegendary)
+    elseif ID == 6 then
+        insertDeathKnightConfig(mainOption)
+        insertClassSpells("DeathKnight", DeathKnightSpells )
+    elseif ID == 7 then
+        insertShamanConfig(mainOption)
+        insertClassSpells("Shaman", ShamanSpells )
+    elseif ID == 8 then
+        insertMageConfig(mainOption)
+        insertClassSpells("Mage", MageSpells )
+    elseif ID == 9 then
+        insertWarlockConfig(mainOption)
+        insertClassSpells("Warlock", WarlockSpells )
+    elseif ID == 10 then
+        insertMonkConfig(mainOption)
+        insertClassSpells("Monk", MonkSpells )
+    elseif ID == 11 then
+        insertDruidConfig(mainOption)
+        insertClassSpells("Druid", DruidSpells )
+    elseif ID == 12 then
+        insertDemonHunterConfig(mainOption)
+        insertClassSpells("DemonHunter", DemonHunterSpells )
+    end
+    insertClassSpells("Common",CommonSpells)
+    insertClassSpells("Bloodlust",Bloodlust)
+end
+
 media:Register("font","BIG_BOLD",[[Interface\AddOns\PersonalBuff\font\BIG_BOLD.TTF]],255 )
 media:Register("statusbar","Flat_N",[[Interface\AddOns\PersonalBuff\texture\nameplate.blp]],255 )
 SetupOptions()
 
-insertClassSpells("Warrior",WarriorSpells)
-insertClassSpells("Paladin",PaladinSpells)
-insertClassSpells("Hunter",HunterSpells)
-insertClassSpells("Rogue",RogueSpells)
-insertClassSpells("Priest",PriestSpells)
-insertClassSpells("DeathKnight",DeathKnightSpells)
-insertClassSpells("Shaman",ShamanSpells)
-insertClassSpells("Mage",MageSpells)
-insertClassSpells("Warlock",WarlockSpells)
-insertClassSpells("Monk",MonkSpells)
-insertClassSpells("Druid",DruidSpells)
-insertClassSpells("DemonHunter",DemonHunterSpells)
-insertClassSpells("Bloodlust",Bloodlust)
+--insertClassSpells("Warrior",WarriorSpells)
+--insertClassSpells("Paladin",PaladinSpells)
+--insertClassSpells("Hunter",HunterSpells)
+--insertClassSpells("Rogue",RogueSpells)
+--insertClassSpells("Priest",PriestSpells)
+--insertClassSpells("DeathKnight",DeathKnightSpells)
+--insertClassSpells("Shaman",ShamanSpells)
+--insertClassSpells("Mage",MageSpells)
+--insertClassSpells("Warlock",WarlockSpells)
+--insertClassSpells("Monk",MonkSpells)
+--insertClassSpells("Druid",DruidSpells)
+--insertClassSpells("DemonHunter",DemonHunterSpells)
+--insertClassSpells("Common",CommonSpells)
+--insertClassSpells("Bloodlust",Bloodlust)
+
+insertClassConfig()
 
 

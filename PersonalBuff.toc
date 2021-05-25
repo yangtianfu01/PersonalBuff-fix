@@ -1,4 +1,4 @@
-## Interface: 90002
+## Interface: 90005
 ## Title: Personal Buff
 ## Title-zhTW: 個人血條增益
 ## Notes: Show buff icons on personal nameplate
@@ -14,6 +14,18 @@ src\Locales.xml
 src\zhTW.lua
 src\enUS.lua
 
+src\class\Warrior.lua
+src\class\Paladin.lua
+src\class\Hunter.lua
+src\class\Rogue.lua
+src\class\Priest.lua
+src\class\DeathKnight.lua
+src\class\Shaman.lua
+src\class\Mage.lua
+src\class\Warlock.lua
+src\class\Monk.lua
+src\class\Druid.lua
+src\class\DemonHunter.lua
 
 src\BuffFrame.lua
 src\spells.lua

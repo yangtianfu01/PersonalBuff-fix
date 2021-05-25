@@ -132,7 +132,7 @@ local function InitializeDB()
                 [292686] = 15,
             },
             customSpell = {
-                340880,
+
             },
             resourceNumber = false,
             resourceNumberType = "Numerical",
@@ -173,11 +173,19 @@ local function addBloodlust()
     end
 end
 
+local function addCommonSpells()
+    for _,i in pairs(CommonSpells) do
+        table.insert(playerInfo.classSpells,i)
+    end
+end
+
 local function addCustomSpellToTable()
     for _,i in pairs(aceDB.char.customSpell) do
         table.insert(playerInfo.classSpells,i)
     end
 end
+
+
 
 local function getPlayerInfo()
     local _,_,ID = UnitClass("player")
@@ -187,10 +195,22 @@ local function getPlayerInfo()
         playerInfo.classSpells = shallowcopy(PaladinSpells)
     elseif ID == 3 then
         playerInfo.classSpells = shallowcopy(HunterSpells)
+        addclassSpells(BeastMasterySpells)
+        addclassSpells(MarksmanshipSpells)
+        addclassSpells(SurvivalSpells)
+        addclassSpells(addclassSpells(HunterPVPSpells))
+        addclassSpells(HunterLegendary)
     elseif ID == 4 then
         playerInfo.classSpells = shallowcopy(RogueSpells)
+        addclassSpells(RogueSpells)
     elseif ID == 5 then
         playerInfo.classSpells = shallowcopy(PriestSpells)
+        addclassSpells(DisciplineSpells)
+        addclassSpells(HolySpells)
+        addclassSpells(ShadowSpells)
+        addclassSpells(PriestPVPSpells)
+        addclassSpells(PriestLegendary)
+
     elseif ID == 6 then
         playerInfo.classSpells = shallowcopy(DeathKnightSpells)
     elseif ID == 7 then
@@ -206,7 +226,7 @@ local function getPlayerInfo()
     elseif ID == 12 then
         playerInfo.classSpells = shallowcopy(DemonHunterSpells)
     end
-
+    addCommonSpells()
     addBloodlust()
     addCustomSpellToTable()
 end
@@ -370,7 +390,6 @@ local function EventHandler(self, event,...)
         loadEnableSpell()
         buffFrame = initialBuffFrame()
         addCustomSpell()
-        insertSpellsSort()
 
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
         if  playerNameplateToken == ... then
@@ -420,6 +439,24 @@ function shallowcopy(orig)
     return copy
 end
 
+
+function addclassSpells(SpellTable)
+    if SpellTable ~= nil then
+        for _,i in pairs(SpellTable) do
+            local isExist = false
+            for _,e in ipairs(playerInfo.classSpells) do
+                if i == e then
+                    isExist = true
+                    break
+                end
+            end
+            if isExist == false then
+                table.insert(playerInfo.classSpells,i)
+            end
+
+        end
+    end
+end
 
 registerAuraEvent()
 updateTracker = false
