@@ -8,22 +8,35 @@ local L = LibStub("AceLocale-3.0"):GetLocale("PersonalBuff")
 
 local ClassID = 12
 DemonHunterSpells = {
-
+    258920,     --獻祭光環
+    188501,     --靈視
 }
 
 HavocSpells = {
-
+    162264,     --惡魔化身
+    212800,     --殘影
+    209426,     --黑暗
+    347462,     --無縛混沌
+    196555,     --虛空穿越
+    208628,     --氣勢如虹
 }
 
 VengeanceSpells = {
-
+    187827,     --惡魔化身
+    203981,     --靈魂碎片
+    203819,     --惡魔尖刺
+    326863,     --破滅壁壘
+    263648,     --靈魂屏障
 }
 
-DeathKnightPVPSpells = {
-
+DemonHunterPVPSpells = {
+    206804,     --從天而降
+    205629,     --惡魔踐踏
+    208769,     --永恆狩獵
+    208796,     --鋸齒尖刺
 }
 
-DeathKnightLegendary = {
+DemonHunterLegendary = {
 }
 
 function insertDemonHunterConfig(configRoot)

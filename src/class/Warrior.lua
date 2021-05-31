@@ -8,19 +8,33 @@ local L = LibStub("AceLocale-3.0"):GetLocale("PersonalBuff")
 
 local ClassID = 1
 WarriorSpells = {
-
+    107574,     --巨象化身
+    132404,     --盾牌格檔
+    190456,     --無視苦痛
+    97463,      --振奮咆哮
+    18499,      --狂暴之怒
+    32216,      --勝利衝擊
+    23920,      --法術反射
 }
 
 ArmsSpells = {
-
+    118038,     --劍下亡魂
+    7384,       --壓制
+    260708,     --橫掃攻擊
 }
 
 FurySpells = {
-
+    1719,       --魯莽
+    184362,     --狂怒
+    184364,     --狂怒恢復
+    275672,     --粉碎怒擊
+    335082,     --狂亂
+    248622,     --趕盡殺絕
 }
 
-ProtectionSpells = {
-
+WarriorProtectionSpells = {
+    871,        --盾牆
+    12975,      --破釜沉舟
 }
 
 WarriorPVPSpells = {

@@ -164,6 +164,9 @@ local function displayIcon(iconSetting,last)
 end
 
 
+local function reloadTexture(SpellID)
+    BuffFrame.icons[SpellID].icon:SetTexture(GetSpellTexture(SpellID))
+end
 
 function BuffFrame:display(enableAuraTable)
     local last
@@ -176,6 +179,9 @@ function BuffFrame:display(enableAuraTable)
         iconSetting.count = k[3]
         iconSetting.alpha = enableAuraTable.alpha
 
+        if k[10] == 259495 then
+            reloadTexture(259495)
+        end
         last = displayIcon(iconSetting,last)
         setAuraTime(iconSetting)
         setStackCount(iconSetting)

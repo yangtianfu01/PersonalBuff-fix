@@ -9,19 +9,26 @@ local L = LibStub("AceLocale-3.0"):GetLocale("PersonalBuff")
 
 local ClassID = 9
 WarlockSpells = {
-
+    104773,     --心志堅定
+    48018,      --惡魔法陣
+    333889,     --惡魔支配
+    5697,       --魔息術
+    108416,     --黑暗契約
+    196099,     --犧牲魔典
 }
 
 AfflictionSpells = {
-
+    113860,     --黑暗之魂:悲慘
 }
 
 DemonologySpells = {
-
+    205146,     --惡魔呼喚
 }
 
 DestructionSpells = {
-
+    113858,     --黑暗之魂:易變
+    117828,     --爆燃
+    266030,     --逆轉熵值
 }
 
 WarlockPVPSpells = {
