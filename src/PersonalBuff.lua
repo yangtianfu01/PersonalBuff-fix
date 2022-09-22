@@ -481,17 +481,14 @@ end
 
 local function setNameplateNumber()
     local nameplate = C_NamePlate.GetNamePlateForUnit("player", issecure())
-
     if showNameplateNumber and nameplate then
         local alpha = nameplate:GetAlpha()
         if healthFrame == nil then
             InitializeHealthNumber(nameplate.UnitFrame.healthBar:GetSize())
         end
-
         healthFrame:SetAllPoints(nameplate.UnitFrame.healthBar)
         healthFrame:SetAlpha(alpha)
         healthFrame.update()
-
 
         if nameplate.driverFrame and nameplate.driverFrame.classNamePlatePowerBar then
 
@@ -507,10 +504,17 @@ local function setNameplateNumber()
 end
 
 local function OnUpdate()
-    hideBlizzardAuras()
-    setBuffFramePoint()
-    updateAura()
-    setNameplateNumber()
+    if InCinematic() ~= true or IsInCinematic() ~= true then
+        hideBlizzardAuras()
+        setBuffFramePoint()
+        updateAura()
+        setNameplateNumber()
+    else
+        buffFrame:clear()
+        healthFrame:SetAlpha(0)
+        powerFrame:SetAlpha(0)
+    end
+
 end
 
 local playerNameplateToken

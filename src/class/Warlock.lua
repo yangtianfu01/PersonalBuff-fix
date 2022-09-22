@@ -23,6 +23,7 @@ AfflictionSpells = {
 
 DemonologySpells = {
     205146,     --惡魔呼喚
+    264173,     --魔能之核
 }
 
 DestructionSpells = {

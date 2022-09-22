@@ -18,6 +18,8 @@ end
 local function setHealthNumerical()
     local playerHealth = UnitHealth("player")
     healthFrame.numerical:SetText(playerHealth)
+
+
 end
 local function setHealthBoth()
     setHealthNumerical()
@@ -33,7 +35,7 @@ local function updatePlayerHealth()
     else
         setHealthNumerical()
     end
-
+    healthFrame:SetAlpha(1)
 end
 
 local function setPowerPercent()
@@ -62,6 +64,7 @@ local function updatePlayerPower()
     else
         setPowerNumerical()
     end
+    powerFrame:SetAlpha(1)
 end
 
 
@@ -69,6 +72,7 @@ local function CreateHealthNumerical()
     local healthNumerical = healthFrame:CreateFontString(nil, "OVERLAY")
     healthNumerical:SetFont(media.MediaTable.font[aceDB.char.resourceFont], aceDB.char.resourceFontSize, "OUTLINE")
     healthNumerical:SetPoint(aceDB.char.resourceAlignment, 0, 0)
+
     healthFrame.numerical = healthNumerical
 end
 
@@ -82,6 +86,7 @@ end
 function InitializeHealthNumber(width,height)
     healthFrame = CreateFrame("Frame",nil,nil)
     healthFrame:SetSize(width, height)
+    healthFrame:SetParent(C_NamePlate.GetNamePlateForUnit("player", issecure()))
 
     local healthTexture = healthFrame:CreateTexture(nil,"ARTWORK")
     healthTexture:SetTexture(0,0,0,0)
@@ -120,6 +125,7 @@ end
 function InitializePowerNumber(width,height)
     powerFrame = CreateFrame("Frame",nil,nil)
     powerFrame:SetSize(width, height)
+    powerFrame:SetParent(C_NamePlate.GetNamePlateForUnit("player", issecure()))
 
     local powerTexture = powerFrame:CreateTexture(nil,"ARTWORK")
     powerTexture:SetTexture(0,0,0,0)

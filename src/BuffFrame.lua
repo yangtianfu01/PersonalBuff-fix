@@ -146,7 +146,7 @@ end
 
 local function displayIcon(iconSetting,last)
     BuffFrame.icons[iconSetting.spellID]:Show()
-    BuffFrame.icons[iconSetting.spellID]:SetAlpha(iconSetting.alpha)
+    BuffFrame.icons[iconSetting.spellID]:SetAlpha(1)
 
     BuffFrame.icons[iconSetting.spellID]:ClearAllPoints()
     BuffFrame.icons[iconSetting.spellID]:SetScale(1)
@@ -191,6 +191,7 @@ end
 function BuffFrame:SetFramePoint(parent)
     BuffFrame.Frame:SetPoint("LEFT", parent ,"LEFT",-( BuffFrame.FrameSetting.IconSetting.iconSize ),
             ((BuffFrame.FrameSetting.IconSetting.iconSize - 20) / 3) + 2)
+    BuffFrame.Frame:SetParent(C_NamePlate.GetNamePlateForUnit("player", issecure()))
 end
 
 function CreateBuffFrame(FrameSetting)

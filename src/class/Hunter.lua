@@ -39,6 +39,7 @@ SurvivalSpells = {
     186289,     --神鷹守護
     259388,     --貓狂怒
     259495,     --野火炸彈
+    260286,     --野火炸彈
 }
 
 HunterPVPSpells = {
@@ -51,6 +52,7 @@ HunterPVPSpells = {
 }
 
 HunterLegendary = {
+	336892,
 }
 
 function insertHunterConfig(configRoot)

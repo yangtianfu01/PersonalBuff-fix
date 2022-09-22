@@ -24,8 +24,123 @@ local function getClassOption()
                 name = L["general"],
 
                 args = {
-                    column = {
+                    personalBar = {
                         order = 1,
+                        name = L["personal bar"],
+                        type = "group",
+                        args ={
+                            personalBar =  {
+                                order = 1,
+                                type = "header",
+                                name = L["personal bar"],
+                            },
+                            setDefault =  {
+                                order = 3,
+                                type = "execute",
+                                name = L["default"],
+
+                                func = function()
+                                    SetCVar ("nameplateSelfTopInset", 0.50)
+                                    SetCVar ("nameplateSelfBottomInset", 0.20)
+                                end,
+
+                            },
+                            personalBarAnchor =  {
+                                order = 2,
+                                type = "range",
+                                name = L["personalBarAnchor"],
+                                min = 20,
+                                max = 70,
+                                step = 1,
+                                get = function()
+                                    return tonumber (100 - GetCVar ("nameplateSelfTopInset")*100)
+                                end,
+                                set = function(info, val)
+                                    SetCVar ("nameplateSelfBottomInset", val / 100)
+                                    SetCVar ("nameplateSelfTopInset", abs (val - 100) / 100)
+                                end,
+                            },
+                            customTexture = {
+                                order = 4,
+                                type = "toggle",
+                                name = L["customTexture"],
+                                confirm = function(info, v)
+                                    if not v then
+                                        return L["Disabling the texture will make them reset next time you reload, are you sure?"]
+                                    end
+                                end ,
+                                get = function(info)
+                                    return aceDB.char.customTexture
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.customTexture = val
+                                end,
+                            },
+                            barTexture = {
+                                order = 5,
+                                type = "select",
+                                style = "dropdown",
+                                name = L["personalBarTexture"],
+                                values = media:List("statusbar"),
+                                itemControl = "DDI-Statusbar",
+                                disabled = function ()
+                                    return not(aceDB.char.customTexture)
+                                end,
+                                get = function(info)
+                                    for i, v in next, media:List("statusbar") do
+                                        if v == aceDB.char.barTexture then return i end
+                                    end
+                                end,
+                                set = function(info,key)
+                                    local list = media:List("statusbar")
+                                    local texture = list[key]
+                                    aceDB.char.barTexture = texture
+                                end,
+                            },
+
+                            changeHealthBarColor = {
+                                order = 6,
+                                type = "toggle",
+                                name = L["change health bar Color by class color"],
+                                confirm = function(info, v)
+                                    if not v then
+                                        return L["Reset the health bar color next time you reload"]
+                                    end
+                                end ,
+                                get = function(info)
+                                    return aceDB.char.changeHealthBarColor
+                                end,
+                                set = function(info, val)
+                                    aceDB.char.changeHealthBarColor = val
+                                end,
+                            },
+							alwayshow = {
+							order = 7,
+                                type = "toggle",
+                                name = L["alway show"],
+                                
+                                get = function(info)
+									if GetCVar("NameplatepersonalShowAlways")== "0" then
+										return false
+									else
+									
+										return true
+									end
+                                end,
+                                set = function(info, val)
+									if val == false then
+										SetCVar("NameplatepersonalShowAlways","0")
+									else
+										SetCVar("NameplatepersonalShowAlways","1")
+									end
+									
+                                end,
+							},
+                        },
+
+                    },
+                    column = {
+                        order = 2,
                         name = L["icons"],
                         type = "group",
                         args ={
@@ -164,70 +279,11 @@ local function getClassOption()
                                     adjustmentCountFont()
                                 end,
                             },
-                            healthBarHeader =  {
-                                order = 8,
-                                type = "header",
-                                name = L["health bar"],
-                            },
-                            customTexture = {
-                                order = 9,
-                                type = "toggle",
-                                name = L["customTexture"],
-                                confirm = function(info, v)
-                                    if not v then
-                                        return L["Disabling the texture will make them reset next time you reload, are you sure?"]
-                                    end
-                                end ,
-                                get = function(info)
-                                    return aceDB.char.customTexture
-                                end,
-                                set = function(info, val)
-                                    aceDB.char.customTexture = val
-                                end,
-                            },
-                            barTexture = {
-                                order = 10,
-                                type = "select",
-                                style = "dropdown",
-                                name = L["personalBarTexture"],
-                                values = media:List("statusbar"),
-                                itemControl = "DDI-Statusbar",
-                                disabled = function ()
-                                    return not(aceDB.char.customTexture)
-                                end,
-                                get = function(info)
-                                    for i, v in next, media:List("statusbar") do
-                                        if v == aceDB.char.barTexture then return i end
-                                    end
-                                end,
-                                set = function(info,key)
-                                    local list = media:List("statusbar")
-                                    local texture = list[key]
-                                    aceDB.char.barTexture = texture
-                                end,
-                            },
-
-                            changeHealthBarColor = {
-                                order = 11,
-                                type = "toggle",
-                                name = L["change health bar Color by class color"],
-                                confirm = function(info, v)
-                                    if not v then
-                                        return L["Reset the health bar color next time you reload"]
-                                    end
-                                end ,
-                                get = function(info)
-                                    return aceDB.char.changeHealthBarColor
-                                end,
-                                set = function(info, val)
-                                    aceDB.char.changeHealthBarColor = val
-                                end,
-                            },
                         },
 
                     },
                     resourceNumber = {
-                        order = 2,
+                        order = 3,
                         name = L["Resource Number"],
                         type = "group",
                         args ={
