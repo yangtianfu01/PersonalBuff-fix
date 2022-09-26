@@ -145,6 +145,9 @@ function BuffFrame:SetIconSize()
 end
 
 local function displayIcon(iconSetting,last)
+    if BuffFrame.icons[iconSetting.spellID] == nil then
+        return last
+    end
     BuffFrame.icons[iconSetting.spellID]:Show()
     BuffFrame.icons[iconSetting.spellID]:SetAlpha(1)
 
@@ -211,4 +214,12 @@ function CreateBuffFrame(FrameSetting)
     end
     BuffFrame.FrameSetting = FrameSetting
     return BuffFrame
+end
+
+function addCustomIcon(spellID)
+    if BuffFrame.icons[spellID] == nil then
+        BuffFrame.FrameSetting.IconSetting.group = IconGroup
+        BuffFrame.FrameSetting.IconSetting.SpellID = spellID
+        BuffFrame.icons[spellID] = CreateIcon(BuffFrame.FrameSetting.IconSetting)
+    end
 end

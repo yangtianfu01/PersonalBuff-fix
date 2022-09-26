@@ -436,30 +436,74 @@ local function SetupOptions()
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Personal Buff", getOptions)
     optionsFrames.PersonalBuff = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Personal Buff", L["Personal Buff"], nil,"mainOption")
 end
-
+local function searchBuff()
+    print("search")
+end
 local function insertClassSpells(classname,spellTable)
     mainOption.args.BuffOption.args[classname].args[tostring(0)] = {
         type = "header",
         order = 0,
         name = classname,
     }
-    for i,k in ipairs(spellTable) do
-        mainOption.args.BuffOption.args[classname].args[tostring(((i + 1) * 2 ) - 1)] = {
+    if classname == "Custom" then
+    --    mainOption.args.BuffOption.args[classname].args[tostring(1)] = {
+    --        type = "input",
+    --        order = 1,
+    --        name = "",
+    --        width = "double",
+    --    }
+    --    mainOption.args.BuffOption.args[classname].args[tostring(2)] = {
+    --        type = "execute",
+    --        order = 2,
+    --        name = "search",
+    --        width = "half",
+    --        func = searchBuff,
+    --    }
+    --    mainOption.args.BuffOption.args[classname].args[tostring(3)] = {
+    --        type = "execute",
+    --        order = 3,
+    --        name = "new",
+    --        width = "half",
+    --    }
+        mainOption.args.BuffOption.args[classname].args[tostring(3)] = {
             type = "toggle",
-            order = ((i + 1) * 2 ) - 1,
+            order = 3,
+            name = "auto detect",
+            get = function(info)
+                return aceDB.char.autoDetect
+            end,
+            set = function(info, val)
+                setAutoDetect(val)
+                aceDB.char.autoDetect = val
+            end,
+        }
+        mainOption.args.BuffOption.args[classname].args[tostring(4)] = {
+            type = "header",
+            order = 4,
+            name = "",
+        }
+    end
+    for i,k in ipairs(spellTable) do
+        mainOption.args.BuffOption.args[classname].args[tostring(((i + 2) * 2 ) - 1)] = {
+            type = "toggle",
+            order = ((i + 1) * 2 ) ,
             name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
             desc = string.format("%s \nid : %d",GetSpellDescription(k),k),
             get = function(info)
                 --return aceDB.char.enabledSpell[k]
+
                 return aceDB.char.spell[k][1]
             end,
             set = function(info, val)
                 --aceDB.char.enabledSpell[k] = val
+                checkEnableSpell(k,val)
+                addCustomIcon(k)
+
                 aceDB.char.spell[k][1] = val
             end,
         }
-        mainOption.args.BuffOption.args[classname].args[tostring(((i + 1) * 2 ))] = {
-            order = ((i + 1) * 2 ),
+        mainOption.args.BuffOption.args[classname].args[tostring(((i + 2) * 2 ))] = {
+            order = ((i + 1) * 2 ) + 1,
             type = "range",
             name = L["Priority"] ,
             desc = L["The higher the rank ordering more left"],
@@ -602,7 +646,7 @@ function setDefaultCustomSpell()
             width = "full",
             set = function (info, v)
                 table.insert(aceDB.char.customSpell,tonumber(v))
-                addCustomSpell()
+                --addCustomSpell()
                 resetBuffFrame()
             end,
             validate = function(info, v)
@@ -630,58 +674,13 @@ function setDefaultCustomSpell()
     }
 end
 
-function resetCustomSpell()
-    setDefaultCustomSpell()
-    addCustomSpell()
-    resetBuffFrame()
-end
-
-function addCustomSpell()
-    local index = 5
-    for i,k in ipairs(aceDB.char.customSpell) do
-
-        mainOption.args.BuffOption.args.customSpell.args[tostring(i+index)] = {
-            order = i+index,
-            type = "execute",
-            name = "",
-            image = "Interface\\AddOns\\PersonalBuff\\texture\\remove.blp",
-            imageWidth = 20,
-            imageHeight = 20,
-            width = 0.1,
-            hidden = function()
-                if i ~= 1 then
-                    return false
-                else
-                    return true
-                end
-            end,
-            func = function()
-                table.remove(aceDB.char.customSpell,i)
-                resetCustomSpell()
-            end
-        }
-        index = index + 1
-
-
-        mainOption.args.BuffOption.args.customSpell.args[tostring(i+index)] = {
-            type = "toggle",
-            order = i+index,
-            name = function() return format("|T%s:16|t %s", GetSpellTexture(k), GetSpellInfo(k)) end,
-            desc = GetSpellDescription(k),
-            width = 1.0,
-            get = function(info)
-                return aceDB.char.enabledSpell[k]
-            end,
-            set = function(info, val)
-                aceDB.char.enabledSpell[k] = val
-            end,
-        }
-
-    end
-end
 
 function setDBoptions()
     mainOption.args.iconOption.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(aceDB)
+end
+
+function updateCustomSpellConfig()
+    insertClassSpells("Custom",CustomSpellList())
 end
 
 function insertClassConfig()
@@ -788,26 +787,12 @@ function insertClassConfig()
     end
     insertClassSpells("Common",CommonSpells)
     insertClassSpells("Bloodlust",Bloodlust)
+    updateCustomSpellConfig()
 end
 
 media:Register("font","BIG_BOLD",[[Interface\AddOns\PersonalBuff\font\BIG_BOLD.TTF]],255 )
 media:Register("statusbar","Flat_N",[[Interface\AddOns\PersonalBuff\texture\nameplate.blp]],255 )
 SetupOptions()
-
---insertClassSpells("Warrior",WarriorSpells)
---insertClassSpells("Paladin",PaladinSpells)
---insertClassSpells("Hunter",HunterSpells)
---insertClassSpells("Rogue",RogueSpells)
---insertClassSpells("Priest",PriestSpells)
---insertClassSpells("DeathKnight",DeathKnightSpells)
---insertClassSpells("Shaman",ShamanSpells)
---insertClassSpells("Mage",MageSpells)
---insertClassSpells("Warlock",WarlockSpells)
---insertClassSpells("Monk",MonkSpells)
---insertClassSpells("Druid",DruidSpells)
---insertClassSpells("DemonHunter",DemonHunterSpells)
---insertClassSpells("Common",CommonSpells)
---insertClassSpells("Bloodlust",Bloodlust)
 
 insertClassConfig()
 

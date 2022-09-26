@@ -92,6 +92,12 @@ function insertDemonHunterConfig(configRoot)
             name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Trade_engineering", L["Common"]) end,
             args = {}
         },
+        Custom = {
+            order = 9,
+            type = "group",
+            name = function() return format("|T%s:16|t %s", "Interface\\ICONS\\Trade_engineering", L["custom"]) end,
+            args = {}
+        },
     }
 
 

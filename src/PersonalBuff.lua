@@ -15,6 +15,7 @@ local YOffset = 0
 local enableAuraTable = {}
 local showNameplateNumber
 local buffFrame
+local autoDetect = false
 
 
 local function iconEnable(spellID)
@@ -26,7 +27,14 @@ local function iconEnable(spellID)
     return false
 end
 
-
+local function isNotExist (tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return false
+        end
+    end
+    return true
+end
 function RankCompare(a,b)
     return a.Rank > b.Rank
 end
@@ -60,6 +68,9 @@ local function updateAura()
             break
         end
         getEnableAuraTable(Buff)
+        if autoDetect and isNotExist(CustomSpell,Buff[10]) == true then
+            table.insert(CustomSpell,Buff[10])
+        end
     end
 
     for i=1,40 do
@@ -148,7 +159,7 @@ local function InitializeDB()
                 [292686] = 15,
             },
             spell = {
-                ['*'] = { true , 0 } ,
+                ['*'] = { false , 0 } ,
 
                 -- Common
                 [340880] = { true , 15 },       --傲慢
@@ -293,19 +304,21 @@ local function InitializeDB()
                 [871] = { true , 14 },         --盾牆
                 [12975] = { true , 13 },       --破釜沉舟
             },
-            customSpell = {
-
-            },
+            customSpell = {},
             resourceNumber = false,
             resourceNumberType = "Numerical",
             resourceFont = "BIG_BOLD",
             resourceFontSize = 8,
             resourceAlignment = "CENTER",
             changeHealthBarColor = false,
+            autoDetect = false,
         }
     }
     aceDB = LibStub("AceDB-3.0"):New("PersonalBuffAceDB", defaultSettings)
     setDBoptions()
+
+    CustomSpell = aceDB.char.customSpell
+    autoDetect = aceDB.char.autoDetect
 end
 
 local function hideBlizzardAuras()
@@ -320,11 +333,31 @@ local function setBuffFramePoint()
     end
 end
 
+function checkEnableSpell(spellID, val)
+    if val == true then
+        table.insert(enabledSpell,spellID)
+    else
+        for i,k in ipairs(enabledSpell) do
+            if k == spellID then
+                table.remove(enabledSpell,i)
+            end
+        end
+    end
+end
+
+
 local function loadEnableSpell()
     enabledSpell = {}
     for _,i in ipairs(playerInfo.classSpells) do
         if aceDB.char.spell[i][1] == true then
             table.insert(enabledSpell,i)
+        end
+    end
+    if CustomSpell ~= nil then
+        for _,i in ipairs(CustomSpell) do
+            if aceDB.char.spell[i][1] == true and isNotExist(playerInfo.classSpells, i)then
+                table.insert(enabledSpell,i)
+            end
         end
     end
 end
@@ -511,8 +544,8 @@ local function OnUpdate()
         setNameplateNumber()
     else
         buffFrame:clear()
-        healthFrame:SetAlpha(0)
-        powerFrame:SetAlpha(0)
+        healthFrame = nil
+        powerFrame = nil
     end
 
 end
@@ -599,13 +632,25 @@ local function clearResourceNumberFrame()
     end
 end
 
+local function newCustomSpellIcon()
+    if CustomSpell ~= nil then
+        for _,i in ipairs(CustomSpell) do
+            if aceDB.char.spell[i][1] == true and isNotExist(playerInfo.classSpells, i)then
+                addCustomIcon(i)
+            end
+        end
+    end
+end
+
+
 local function EventHandler(self, event,...)
     if event == "PLAYER_ENTERING_WORLD" then
         InitializeDB()
         getPlayerInfo()
         loadEnableSpell()
         buffFrame = initialBuffFrame()
-        addCustomSpell()
+        newCustomSpellIcon()
+        updateCustomSpellConfig()
 
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
         if  playerNameplateToken == ... then
@@ -618,6 +663,10 @@ local function EventHandler(self, event,...)
     elseif event == "NAME_PLATE_UNIT_ADDED" then
         healthBarReset(...)
         namePlateUpdate()
+    elseif event == "PLAYER_LEAVE_COMBAT" then
+        aceDB.char.CustomSpell = CustomSpell
+        updateCustomSpellConfig()
+
     else
         namePlateUpdate()
     end
@@ -629,6 +678,7 @@ local function registerAuraEvent()
     eventFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
     eventFrame:RegisterEvent("UNIT_AURA")
     eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    eventFrame:RegisterEvent("PLAYER_LEAVE_COMBAT")
     eventFrame:SetScript("OnEvent", EventHandler)
 end
 
@@ -673,6 +723,25 @@ function addClassSpells(SpellTable)
         end
     end
 end
+
+
+
+function CustomSpellList()
+    local enableTable = {}
+
+    for _,i in ipairs(CustomSpell) do
+        if isNotExist(playerInfo.classSpells, i) then
+            table.insert(enableTable,i)
+        end
+    end
+
+    return enableTable
+end
+
+function setAutoDetect(val)
+    autoDetect = val
+end
+
 
 registerAuraEvent()
 updateTracker = false

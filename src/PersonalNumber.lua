@@ -19,7 +19,6 @@ local function setHealthNumerical()
     local playerHealth = UnitHealth("player")
     healthFrame.numerical:SetText(playerHealth)
 
-
 end
 local function setHealthBoth()
     setHealthNumerical()
@@ -35,6 +34,7 @@ local function updatePlayerHealth()
     else
         setHealthNumerical()
     end
+    healthFrame:SetParent(C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.healthBar)
     healthFrame:SetAlpha(1)
 end
 
@@ -64,6 +64,7 @@ local function updatePlayerPower()
     else
         setPowerNumerical()
     end
+    powerFrame:SetParent(C_NamePlate.GetNamePlateForUnit("player", issecure()).driverFrame.classNamePlatePowerBar)
     powerFrame:SetAlpha(1)
 end
 
@@ -86,7 +87,6 @@ end
 function InitializeHealthNumber(width,height)
     healthFrame = CreateFrame("Frame",nil,nil)
     healthFrame:SetSize(width, height)
-    healthFrame:SetParent(C_NamePlate.GetNamePlateForUnit("player", issecure()))
 
     local healthTexture = healthFrame:CreateTexture(nil,"ARTWORK")
     healthTexture:SetTexture(0,0,0,0)
@@ -125,7 +125,6 @@ end
 function InitializePowerNumber(width,height)
     powerFrame = CreateFrame("Frame",nil,nil)
     powerFrame:SetSize(width, height)
-    powerFrame:SetParent(C_NamePlate.GetNamePlateForUnit("player", issecure()))
 
     local powerTexture = powerFrame:CreateTexture(nil,"ARTWORK")
     powerTexture:SetTexture(0,0,0,0)

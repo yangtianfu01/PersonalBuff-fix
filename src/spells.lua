@@ -75,3 +75,8 @@ CommonSpells = {
 Bloodlust = {
     32182, 2825, 80353, 264667,309658,
 }
+
+CustomSpell = {}
+
+
+
