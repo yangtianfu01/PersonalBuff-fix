@@ -26,6 +26,7 @@ src\class\Warlock.lua
 src\class\Monk.lua
 src\class\Druid.lua
 src\class\DemonHunter.lua
+src\class\Evoker.lua
 
 src\BuffFrame.lua
 src\spells.lua

@@ -36,13 +36,13 @@ PriestHolySpells = {
 
 ShadowSpells = {
     194249,     --虛無型態
-    319952,     --獻身瘋狂
+
     47585,      --影散
     15286,      --吸血鬼的擁抱
 }
 
 PriestPVPSpells = {
-    213602,     --強效漸隱術
+
     197862,     --大天使
     197871,     --黑暗大天使
     213610,     --神聖結界
@@ -97,13 +97,13 @@ function insertPriestConfig(configRoot)
             args = {
             }
         },
-        Legendary = {
-            order = 6,
-            type = "group",
-            name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
-            args = {
-            }
-        },
+        --Legendary = {
+        --    order = 6,
+        --    type = "group",
+        --    name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
+        --    args = {
+        --    }
+        --},
         Bloodlust= {
             order = 7,
             type = "group",

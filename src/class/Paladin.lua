@@ -14,7 +14,7 @@ PaladinSpells = {
     132403,     --公正之盾
     223819,     --神聖意圖
     105809,     --神聖復仇者
-    152262,     --六翼天使
+    --152262,     --六翼天使
     1022,       --保護祝福
     1044,       --自由祝福
     32223,      --十字軍光環
@@ -94,13 +94,13 @@ function insertPaladinConfig(configRoot)
             args = {
             }
         },
-        Legendary= {
-            order = 6,
-            type = "group",
-            name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
-            args = {
-            }
-        },
+        --Legendary= {
+        --    order = 6,
+        --    type = "group",
+        --    name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
+        --    args = {
+        --    }
+        --},
         Bloodlust= {
             order = 7,
             type = "group",

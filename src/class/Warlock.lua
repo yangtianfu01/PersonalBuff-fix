@@ -80,13 +80,13 @@ function insertWarlockConfig(configRoot)
             args = {
             }
         },
-        Legendary= {
-            order = 6,
-            type = "group",
-            name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
-            args = {
-            }
-        },
+        --Legendary= {
+        --    order = 6,
+        --    type = "group",
+        --    name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
+        --    args = {
+        --    }
+        --},
         Bloodlust= {
             order = 7,
             type = "group",

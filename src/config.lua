@@ -465,7 +465,7 @@ local function insertClassSpells(classname,spellTable)
     --        name = "new",
     --        width = "half",
     --    }
-        mainOption.args.BuffOption.args[classname].args[tostring(3)] = {
+        mainOption.args.BuffOption.args[classname].args[tostring(2)] = {
             type = "toggle",
             order = 3,
             name = "auto detect",
@@ -477,9 +477,18 @@ local function insertClassSpells(classname,spellTable)
                 aceDB.char.autoDetect = val
             end,
         }
+        mainOption.args.BuffOption.args[classname].args[tostring(3)] = {
+            type = "execute",
+            name = L["default"],
+            order = 4,
+            func = function()
+                aceDB.char.customSpell = {}
+                aceDB.char.CustomSpell = {}
+            end,
+        }
         mainOption.args.BuffOption.args[classname].args[tostring(4)] = {
             type = "header",
-            order = 4,
+            order = 5,
             name = "",
         }
     end
@@ -693,7 +702,6 @@ function insertClassConfig()
         insertClassSpells("Fury",FurySpells)
         insertClassSpells("Protection",WarriorProtectionSpells)
         insertClassSpells("PVP",WarriorPVPSpells)
-        insertClassSpells("Legendary",WarriorLegendary)
     elseif ID == 2 then
         insertPaladinConfig(mainOption)
         insertClassSpells("Paladin", PaladinSpells )
@@ -701,7 +709,6 @@ function insertClassConfig()
         insertClassSpells("Protection", PaladinProtectionSpells)
         insertClassSpells("Retribution",RetributionSpells)
         insertClassSpells("PVP",PaladinPVPSpells)
-        insertClassSpells("Legendary",PaladinLegendary)
     elseif ID == 3 then
         insertHunterConfig(mainOption)
         insertClassSpells("Hunter",HunterSpells)
@@ -709,7 +716,6 @@ function insertClassConfig()
         insertClassSpells("Marksmanship",MarksmanshipSpells)
         insertClassSpells("Survival",SurvivalSpells)
         insertClassSpells("PVP",HunterPVPSpells)
-        insertClassSpells("Legendary",HunterLegendary)
     elseif ID == 4 then
         insertRogueConfig(mainOption)
         insertClassSpells("Rogue", RogueSpells)
@@ -717,7 +723,6 @@ function insertClassConfig()
         insertClassSpells("Outlaw", OutlawSpells)
         insertClassSpells("Subtlety", SubtletySpells)
         insertClassSpells("PVP", RoguePVPSpells)
-        insertClassSpells("Legendary", RogueLegendary)
     elseif ID == 5 then
         insertPriestConfig(mainOption)
         insertClassSpells("Priest", PriestSpells)
@@ -725,7 +730,6 @@ function insertClassConfig()
         insertClassSpells("Holy", PriestHolySpells)
         insertClassSpells("Shadow",ShadowSpells)
         insertClassSpells("PVP",PriestPVPSpells)
-        insertClassSpells("Legendary",PriestLegendary)
     elseif ID == 6 then
         insertDeathKnightConfig(mainOption)
         insertClassSpells("DeathKnight", DeathKnightSpells )
@@ -733,7 +737,6 @@ function insertClassConfig()
         insertClassSpells("Frost", DeathKnightFrostSpells )
         insertClassSpells("Unholy", UnholySpells )
         insertClassSpells("PVP",DeathKnightPVPSpells)
-        insertClassSpells("Legendary",DeathKnightLegendary)
     elseif ID == 7 then
         insertShamanConfig(mainOption)
         insertClassSpells("Shaman", ShamanSpells )
@@ -741,7 +744,6 @@ function insertClassConfig()
         insertClassSpells("Enhancement", EnhancementSpells )
         insertClassSpells("Restoration", ShamanRestorationSpells )
         insertClassSpells("PVP",ShamanPVPSpells)
-        insertClassSpells("Legendary",ShamanLegendary)
     elseif ID == 8 then
         insertMageConfig(mainOption)
         insertClassSpells("Mage", MageSpells )
@@ -749,7 +751,6 @@ function insertClassConfig()
         insertClassSpells("Fire", FireSpells )
         insertClassSpells("Frost", MageFrostSpells )
         insertClassSpells("PVP",MagePVPSpells)
-        insertClassSpells("Legendary",MageLegendary)
     elseif ID == 9 then
         insertWarlockConfig(mainOption)
         insertClassSpells("Warlock", WarlockSpells )
@@ -757,7 +758,6 @@ function insertClassConfig()
         insertClassSpells("Demonology", DemonologySpells )
         insertClassSpells("Destruction", DestructionSpells )
         insertClassSpells("PVP",WarlockPVPSpells)
-        insertClassSpells("Legendary",WarlockLegendary)
     elseif ID == 10 then
         insertMonkConfig(mainOption)
         insertClassSpells("Monk", MonkSpells )
@@ -765,7 +765,6 @@ function insertClassConfig()
         insertClassSpells("Mistweaver", MistweaverSpells )
         insertClassSpells("Windwalker", WindwalkerSpells )
         insertClassSpells("PVP",MonkPVPSpells)
-        insertClassSpells("Legendary",MonkLegendary)
     elseif ID == 11 then
         insertDruidConfig(mainOption)
         insertClassSpells("Druid", DruidSpells )
@@ -774,7 +773,6 @@ function insertClassConfig()
         insertClassSpells("Restoration", DruidRestorationSpells)
         insertClassSpells("Guardian", GuardianSpells )
         insertClassSpells("PVP",DruidPVPSpells)
-        insertClassSpells("Legendary",DruidLegendary)
 
 
     elseif ID == 12 then
@@ -783,7 +781,12 @@ function insertClassConfig()
         insertClassSpells("Havoc",HavocSpells)
         insertClassSpells("Vengeance",VengeanceSpells)
         insertClassSpells("PVP",DemonHunterPVPSpells)
-        insertClassSpells("Legendary",DemonHunterLegendary)
+    elseif ID == 13 then
+        insertEvokerConfig(mainOption)
+        insertClassSpells("Evoker", EvokerSpells )
+        insertClassSpells("Devastation",DevastationSpells)
+        insertClassSpells("Preservation",PreservationSpells)
+        insertClassSpells("PVP",EvokerPVPSpells)
     end
     insertClassSpells("Common",CommonSpells)
     insertClassSpells("Bloodlust",Bloodlust)

@@ -14,6 +14,8 @@ HunterSpells = {
     199483,     --偽裝
     231390,     --追獵高手
     324156,     --剝皮者印記
+    388045,     --哨兵貓頭鷹
+
 }
 
 BeastMasterySpells = {
@@ -23,6 +25,8 @@ BeastMasterySpells = {
     257946,     --獵殺快感
     272790,     --狂暴
     281036,     --凶暴野獸
+    359844,     --野性呼喚
+	378747,		--凶暴獸群
 }
 
 MarksmanshipSpells = {
@@ -32,6 +36,8 @@ MarksmanshipSpells = {
     260402,     --雙重射擊
     193534,     --穩固集中
     194594,     --蓄勢待發
+	388998,     --鋒銳碎片
+	407405,     --加快節奏
 }
 
 SurvivalSpells = {
@@ -95,13 +101,13 @@ function insertHunterConfig(configRoot)
             args = {
             }
         },
-        Legendary= {
-            order = 6,
-            type = "group",
-            name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
-            args = {
-            }
-        },
+        --Legendary= {
+        --    order = 6,
+        --    type = "group",
+        --    name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
+        --    args = {
+        --    }
+        --},
         Bloodlust= {
             order = 7,
             type = "group",

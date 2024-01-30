@@ -19,6 +19,7 @@ HavocSpells = {
     347462,     --無縛混沌
     196555,     --虛空穿越
     208628,     --氣勢如虹
+	427641,		--慣性
 }
 
 VengeanceSpells = {
@@ -72,13 +73,13 @@ function insertDemonHunterConfig(configRoot)
             args = {
             }
         },
-        Legendary= {
-            order = 6,
-            type = "group",
-            name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
-            args = {
-            }
-        },
+        --Legendary= {
+        --    order = 6,
+        --    type = "group",
+        --    name = function() return format("|cffFF8000|T%s:16|t %s", "Interface\\ICONS\\inv_antorus_turquoise", L["Legendary"]) end,
+        --    args = {
+        --    }
+        --},
         Bloodlust= {
             order = 7,
             type = "group",

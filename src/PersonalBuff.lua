@@ -164,12 +164,14 @@ local function InitializeDB()
                 -- Common
                 [340880] = { true , 15 },       --傲慢
                 [10060] = { true , 15 },        --注入能量
+                [395152] = { true , 13 },        --注入能量
 
                 -- Bloodlust
                 [32182] = { true , 14 },
                 [2825] = { true , 14 },
                 [80353] = { true , 14 },
                 [264667] = { true , 14 },
+                [390386] = { true , 14 },
                 [309658] = { true , 14 },
 
                 -- hunter
@@ -303,6 +305,16 @@ local function InitializeDB()
                 [184362] = { true , 13 },       --狂怒
                 [871] = { true , 14 },         --盾牆
                 [12975] = { true , 13 },       --破釜沉舟
+
+                --Evoker
+                [363916] = { true , 0 },        --黑曜麟片
+                [358267] = { true , 0 },        --盤旋
+                [375087] = { true , 15 },       --龍之怒
+                [359618] = { true , -1 },       --龍能爆發
+                [386353] = { true , 1 },       --虹彩:紅色
+                [386399] = { true , 1 },       --虹彩:藍色
+
+
             },
             customSpell = {},
             resourceNumber = false,
@@ -390,28 +402,24 @@ local function getPlayerInfo()
         addClassSpells(FurySpells)
         addClassSpells(WarriorProtectionSpells)
         addClassSpells(WarriorPVPSpells)
-        addClassSpells(WarriorLegendary)
     elseif ID == 2 then
         playerInfo.classSpells = shallowcopy(PaladinSpells)
         addClassSpells(PaladinHolySpells)
         addClassSpells(PaladinProtectionSpells)
         addClassSpells(RetributionSpells)
         addClassSpells(PaladinPVPSpells)
-        addClassSpells(PaladinLegendary)
     elseif ID == 3 then
         playerInfo.classSpells = shallowcopy(HunterSpells)
         addClassSpells(BeastMasterySpells)
         addClassSpells(MarksmanshipSpells)
         addClassSpells(SurvivalSpells)
         addClassSpells(HunterPVPSpells)
-        addClassSpells(HunterLegendary)
     elseif ID == 4 then
         playerInfo.classSpells = shallowcopy(RogueSpells)
         addClassSpells(AssassinationSpells)
         addClassSpells(OutlawSpells)
         addClassSpells(SubtletySpells)
         addClassSpells(RoguePVPSpells)
-        addClassSpells(RogueLegendary)
 
     elseif ID == 5 then
         playerInfo.classSpells = shallowcopy(PriestSpells)
@@ -419,7 +427,6 @@ local function getPlayerInfo()
         addClassSpells(PriestHolySpells)
         addClassSpells(ShadowSpells)
         addClassSpells(PriestPVPSpells)
-        addClassSpells(PriestLegendary)
 
     elseif ID == 6 then
         playerInfo.classSpells = shallowcopy(DeathKnightSpells)
@@ -427,35 +434,30 @@ local function getPlayerInfo()
         addClassSpells(DeathKnightFrostSpells)
         addClassSpells(UnholySpells)
         addClassSpells(DeathKnightPVPSpells)
-        addClassSpells(DeathKnightLegendary)
     elseif ID == 7 then
         playerInfo.classSpells = shallowcopy(ShamanSpells)
         addClassSpells(ElementalSpells)
         addClassSpells(EnhancementSpells)
         addClassSpells(ShamanRestorationSpells)
         addClassSpells(ShamanPVPSpells)
-        addClassSpells(ShamanLegendary)
     elseif ID == 8 then
         playerInfo.classSpells = shallowcopy(MageSpells)
         addClassSpells(ArcaneSpells)
         addClassSpells(FireSpells)
         addClassSpells(MageFrostSpells)
         addClassSpells(MagePVPSpells)
-        addClassSpells(MageLegendary)
     elseif ID == 9 then
         playerInfo.classSpells = shallowcopy(WarlockSpells)
         addClassSpells(AfflictionSpells)
         addClassSpells(DemonologySpells)
         addClassSpells(DestructionSpells)
         addClassSpells(WarlockPVPSpells)
-        addClassSpells(WarlockLegendary)
     elseif ID == 10 then
         playerInfo.classSpells = shallowcopy(MonkSpells)
         addClassSpells(BrewmasterSpells)
         addClassSpells(MistweaverSpells)
         addClassSpells(WindwalkerSpells)
         addClassSpells(MonkPVPSpells)
-        addClassSpells(MonkLegendary)
     elseif ID == 11 then
         playerInfo.classSpells = shallowcopy(DruidSpells)
         addClassSpells(BalanceSpells)
@@ -463,13 +465,16 @@ local function getPlayerInfo()
         addClassSpells(DruidRestorationSpells)
         addClassSpells(GuardianSpells)
         addClassSpells(DruidPVPSpells)
-        addClassSpells(DruidLegendary)
     elseif ID == 12 then
         playerInfo.classSpells = shallowcopy(DemonHunterSpells)
         addClassSpells(HavocSpells)
         addClassSpells(VengeanceSpells)
         addClassSpells(DemonHunterPVPSpells)
-        addClassSpells(DemonHunterLegendary)
+    elseif ID == 13 then
+        playerInfo.classSpells = shallowcopy(EvokerSpells)
+        addClassSpells(DevastationSpells)
+        addClassSpells(PreservationSpells)
+        addClassSpells(EvokerPVPSpells)
     end
     addCommonSpells()
     addBloodlust()
@@ -642,6 +647,62 @@ local function newCustomSpellIcon()
     end
 end
 
+local defaultBuffIDTable = {}
+local function getDefaultBuffIDTable()
+    if C_NamePlate.GetNamePlateForUnit("player", issecure()) ~= nil then
+        local BuffFrame = C_NamePlate.GetNamePlateForUnit("player", issecure()).UnitFrame.BuffFrame
+        local Buffs = {BuffFrame:GetChildren()}
+        for i,k in ipairs(Buffs) do
+            if k:IsShown() then
+                if k["spellID"] ~= nil then
+                    defaultBuffIDTable[i] = k["spellID"]
+                end
+            end
+        end
+    end
+end
+
+local function hideBlizzardBuffFrame(unitToken)
+    if UnitIsUnit("player",unitToken) then
+        C_NamePlate.GetNamePlateForUnit(unitToken, issecure()).UnitFrame.BuffFrame.alpha = 0
+    else
+        C_NamePlate.GetNamePlateForUnit(unitToken, issecure()).UnitFrame.BuffFrame.alpha = 1
+    end
+end
+
+
+
+local function updatePlayerBuffFrame(unit, info)
+    if UnitIsUnit("player",unit) then
+
+        if info.isFullUpdate then
+            print("full update")
+            return
+        end
+        if info.addedAuras then
+            local t = {}
+            for _, v in pairs(info.addedAuras) do
+                tinsert(t, format("%d(%s)", v.auraInstanceID, v.name))
+            end
+            print(unit, "|cnGREEN_FONT_COLOR:added|r", table.concat(t, ", "))
+        end
+        if info.updatedAuraInstanceIDs then
+            local t = {}
+            for _, v in pairs(info.updatedAuraInstanceIDs) do
+                local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(unit, v)
+                tinsert(t, format("%d(%s)", aura.auraInstanceID, aura.name))
+            end
+            print(unit, "|cnYELLOW_FONT_COLOR:updated|r", table.concat(t, ", "))
+        end
+        if info.removedAuraInstanceIDs then
+            local t = {}
+            for _, v in pairs(info.removedAuraInstanceIDs) do
+                tinsert(t, v)
+            end
+            print(unit, "|cnRED_FONT_COLOR:removed|r", table.concat(t, ", "))
+        end
+    end
+end
 
 local function EventHandler(self, event,...)
     if event == "PLAYER_ENTERING_WORLD" then
@@ -656,19 +717,22 @@ local function EventHandler(self, event,...)
         if  playerNameplateToken == ... then
             buffFrame:clear()
             updateTracker = false
-            updateTicker:Cancel()
+            --updateTicker:Cancel()
             playerNameplateToken = nil
             clearResourceNumberFrame()
         end
     elseif event == "NAME_PLATE_UNIT_ADDED" then
         healthBarReset(...)
-        namePlateUpdate()
+        --namePlateUpdate()
+        hideBlizzardBuffFrame(...)
     elseif event == "PLAYER_LEAVE_COMBAT" then
-        aceDB.char.CustomSpell = CustomSpell
+        aceDB.char.customSpell = CustomSpell
         updateCustomSpellConfig()
-
+    elseif event == "UNIT_AURA" then
+        updatePlayerBuffFrame(...)
     else
         namePlateUpdate()
+        getDefaultBuffIDTable()
     end
 end
 
