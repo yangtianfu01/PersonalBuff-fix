@@ -97,7 +97,7 @@ local function setAuraTimer(iconSetting)
     if BuffFrame.icons[iconSetting.spellID].timer ~= nil then
         BuffFrame.icons[iconSetting.spellID].timer:Cancel()
     end
-	if AuraTime ~= nil and BuffFrame.icons[iconSetting.spellID]:IsShown() then
+	if AuraTime ~= nil and AuraTime >=0 and BuffFrame.icons[iconSetting.spellID]:IsShown() then
 		BuffFrame.icons[iconSetting.spellID].timer = C_Timer.NewTicker(0.1, function() setAuraTime(iconSetting)end ,math.floor(AuraTime * 10))
 	end
 end
