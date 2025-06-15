@@ -1,8 +1,8 @@
 ## Interface: 110000, 110002
 ## Title: Personal Buff
-## Title-zhTW: 個人血條增益
+## Title-zhCN: 个人血条增益
 ## Notes: Show buff icons on personal nameplate
-## Notes-zhTW: 顯示增益圖示於個人血條
+## Notes-zhCN: 显示增益于个人姓名面板
 ## SavedVariables: PersonalBuffAceDB
 
 
@@ -13,7 +13,7 @@
 embeds.xml
 
 src\Locales.xml
-src\zhTW.lua
+src\zhCN.lua
 src\enUS.lua
 
 src\BuffFrame.lua
